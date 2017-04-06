@@ -1,2 +1,2 @@
 # smart-pdo
-ibrary for smart PDO handler, no more need for building query's by hand
+library for smart PDO handler, no more need for building query's by hand
