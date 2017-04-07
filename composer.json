@@ -1,0 +1,24 @@
+{
+    "name": "theman/smartpdo",
+    "type": "library",
+    "description": "library for smart PDO handler, no more need for building query's by hand!",
+	"homepage": "https://github.com/Rickdeman/smart-pdo",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Rick de Man",
+            "email": "rick@rickdeman.nl",
+            "homepage": "http://rickdeman.nl",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-4": {
+			"SmartPDO\\": "src/SmartPDO"
+		}
+    },
+    "minimum-stability": "stable"
+}
