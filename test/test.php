@@ -1,23 +1,31 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php'; // Autoload files using Composer autoload
+require_once __DIR__ . '/../vendor/autoload.php'; 
 
-// {"char":"utf8","db":"ricdem1_wms","host":"127.0.0.1","pass":"HwTcuuHFBYR37bjJ","prefix":"wms_","type":"mysql","user":"ricdem1_wms"}
 /**
- *
- * @author Rick de Man <rick@rickdeman.nl>
- * @version 1
- *
- * @var \SmartPDO\MySQL $test
+ * SmartPDO MySQL handler 
+ * 
+ * @var \SmartPDO\MySQL $MySQL
  */
-$test = new \SmartPDO\MySQL("ricdem1_wms", "HwTcuuHFBYR37bjJ", "ricdem1_wms", "wms");
+$MySQL = new \SmartPDO\MySQL("smartpdo", "PvZZMGeeAp0UPtC4", "smartpdo", "spdo");
+
+
+
+
+
 /**
- *
- * @author Rick de Man <rick@rickdeman.nl>
- * @version 1
+ * Get a table from the database
  *
  * @var \SmartPDO\MySQL\Table $table
  */
-$table = $test->getTable('customer')->addWhere("ID", 1)->addOr(false)->addWhere("ID", 1)->addOr()->addWhere("ID", 1 , ">");
+$table = $MySQL->getTable('customer')->addWhere('ID', 1)->addInnerJoin('licences', 'customerId');
 
-print_r($table);
+
+/** 
+ * @var \SmartPDO\MySQL\Table\Rows $rows
+ */
+$rows = $table->execute();
+
+print_r($rows->getRows());
+print_r($rows->getQuery());
+

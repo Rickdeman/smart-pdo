@@ -15,25 +15,25 @@ namespace SmartPDO;
 class MySQL implements \SmartPDO\Interfaces\Database {
 	
 	/**
-	 * Mysql database table list
-	 *
-	 * @var array
-	 */
-	private $tables = array ();
-	
-	/**
 	 * Pdo database handler
 	 *
 	 * @var \PDO
 	 */
-	private $pdo;
-	
+	public $pdo;
+		
 	/**
 	 * Table prefix string
 	 *
 	 * @var string
 	 */
 	private $prefix = '';
+	
+	/**
+	 * Mysql database table list
+	 *
+	 * @var array
+	 */
+	private $tables = array ();
 	
 	/**
 	 * SmartPDO MySQL handler
@@ -126,6 +126,21 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 	 *
 	 * {@inheritdoc}
 	 *
+	 * @see \SmartPDO\Interfaces\Database::getPrefix()
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return string
+	 */
+	public function getPrefix() {
+		return $this->prefix;
+	}
+	
+	/**
+	 *
+	 * {@inheritdoc}
+	 *
 	 * @see \SmartPDO\Interfaces\Database::getTable()
 	 *
 	 * @param string $tableName
@@ -147,6 +162,7 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 		// Return mysql table
 		return new \SmartPDO\Mysql\Table ( $this, $tableName );
 	}
+	
 	
 	/**
 	 *
@@ -203,16 +219,15 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 	
 	/**
 	 *
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Database::getPrefix()
+	 * @see \SmartPDO\Interfaces\Database::getTables()
 	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
-	 * @return string
+	 * @return array[]
 	 */
-	public function getPrefix() {
-		return $this->prefix;
+	public function getTables(){
+		return $this->tables;
 	}
+	
+
 }

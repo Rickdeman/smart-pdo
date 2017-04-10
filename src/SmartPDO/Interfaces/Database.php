@@ -89,6 +89,16 @@ interface Database {
 	public function getTableName($tableName);
 	
 	/**
+	 * Get all tables with columns
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *        
+	 * @return array
+	 */
+	public function getTables();
+	
+	/**
 	 * Get the prefix string
 	 *
 	 * @version 1
