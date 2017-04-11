@@ -5,14 +5,6 @@
  */
 namespace SmartPDO;
 
-define ( 'SMART_PDO_COLUMNS', 0b00000001 );
-define ( 'SMART_PDO_JOIN', 0b00000010 );
-define ( 'SMART_PDO_INSERT', 0b00000100 );
-define ( 'SMART_PDO_LIMIT', 0b00001000 );
-define ( 'SMART_PDO_ORDERBY', 0b00010000 );
-define ( 'SMART_PDO_SET', 0b00100000 );
-define ( 'SMART_PDO_WHERE', 0b01000000 );
-
 /**
  * Smart PDO Table parameters handler
  *
@@ -44,18 +36,6 @@ class Parameters {
 	 * @var array
 	 */
 	private $mysqlTables = null;
-
-	/**
-	 * Available query statements
-	 *
-	 * @var array
-	 */
-	const commandList = array (
-			'SELECT' => SMART_PDO_COLUMNS | SMART_PDO_JOIN | SMART_PDO_LIMIT | SMART_PDO_ORDERBY | SMART_PDO_WHERE,
-			'UPDATE' => SMART_PDO_SET | SMART_PDO_WHERE,
-			'INSERT' => SMART_PDO_INSERT,
-			'DELETE' => SMART_PDO_WHERE
-	);
 
 	/**
 	 * Available compare methods
@@ -104,6 +84,13 @@ class Parameters {
 	 * @var string
 	 */
 	private $prefix = "";
+
+	/**
+	 * Placeholder for each SET
+	 *
+	 * @var array
+	 */
+	private $insert = null;
 
 	/**
 	 * Placeholder for each JOIN
@@ -202,6 +189,20 @@ class Parameters {
 	 */
 	public function getColumns() {
 		return $this->columns;
+	}
+
+	/**
+	 * Get the INSERT collection
+	 *
+	 * arrays markup: column => value
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return array
+	 */
+	public function getInsert() {
+		return $this->insert;
 	}
 
 	/**
@@ -315,11 +316,38 @@ class Parameters {
 			throw new \Exception ( "Expected string, '" . gettype ( $command ) . "' provided" );
 		}
 		// Check if command is available
-		if (! in_array ( strtoupper ( $command ), array_keys ( self::commandList ) )) {
+		if (! in_array ( strtoupper ( $command ), array_keys ( Config::commandList ) )) {
 			throw new \Exception ( "Command is '" . strtoupper ( $command ) . "' invalid" );
 		}
 		// Register Command
 		$this->command = strtoupper ( $command );
+	}
+
+	/**
+	 * Register an INSERT
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @param string $columns
+	 *        	Fully qualified table column
+	 * @param string $value
+	 *        	Value to be inserted
+	 */
+	public function registerInsert($columns, $value) {
+		// Check if function is allowed within current command
+		if ((Config::PDO_INSERT & Config::commandList [$this->command]) == 0) {
+			throw new \Exception ( "Cannot register INSERT with current command: " . $this->command );
+		}
+		// Validate argument types
+		if (! is_string ( $columns )) {
+			throw new \Exception ( "Expected string, '" . gettype ( $columns ) . "' provided" );
+		}
+		if (! is_array ( $this->insert )) {
+			$this->insert = array ();
+		}
+		// Add set parameters
+		$this->insert [$columns] = $value;
 	}
 
 	/**
@@ -343,7 +371,7 @@ class Parameters {
 	 */
 	public function registerJoin($type, $sourceTable, $sourceColumn, $targetTable, $targetColumn) {
 		// Check if function is allowed within current command
-		if ((SMART_PDO_JOIN & self::commandList [$this->command]) == 0) {
+		if ((Config::PDO_JOIN & Config::commandList [$this->command]) == 0) {
 			throw new \Exception ( "Cannot register a JOIN with current command: " . $this->command );
 		}
 		// Validate comparison symbol
@@ -354,18 +382,43 @@ class Parameters {
 		if (! is_string ( $sourceTable )) {
 			throw new \Exception ( "Expected 'sourceTable' to be string, '" . gettype ( $sourceTable ) . "' provided" );
 		}
+		// Verify Source column is string
+		if (! is_string ( $sourceColumn )) {
+			throw new \Exception ( "Expected 'sourceColumn' to be string, '" . gettype ( $sourceColumn ) . "' provided" );
+		}
 		// Verify Target table is string
 		if (! is_string ( $targetTable )) {
 			throw new \Exception ( "Expected 'targetTable' to be string, '" . gettype ( $targetTable ) . "' provided" );
 		}
-
-		// TODO: Check $sourceColumn & $targetColumn exists within its table
+		// Verify Target column is string
+		if (! is_string ( $targetColumn )) {
+			throw new \Exception ( "Expected 'targetColumn' to be string, '" . gettype ( $targetColumn ) . "' provided" );
+		}
+		// Verify Source table exists
+		if (! $this->_tableExists ( $sourceTable )) {
+			throw new \Exception ( sprintf ( "Source table `%s` does not exist!", $sourceTable ) );
+		}
+		// Verify Source columns exists
+		if (! $this->_ColumnExists ( $sourceTable, $sourceColumn )) {
+			throw new \Exception ( sprintf ( "Source column `%s`.`%s` does not exist!", $sourceTable, $sourceColumn ) );
+		}
+		// Verify Target table exists
+		if (! $this->_tableExists ( $targetTable )) {
+			throw new \Exception ( sprintf ( "Target table `%s` does not exist!", $targetTable ) );
+		}
+		// Verify Source columns exists
+		if (! $this->_ColumnExists ( $targetTable, $targetColumn )) {
+			throw new \Exception ( sprintf ( "Source column `%s`.`%s` does not exist!", $targetTable, $targetColumn ) );
+		}
+		if (! in_array ( $sourceTable, $this->tables )) {
+			throw new \Exception ( sprintf ( "Source table `%s` is not available at this moment!", $targetTable ) );
+		}
 		if ($this->joins == NULL) {
 			$this->joins = array ();
 		}
 		// Register INNER JOIN
 		$this->joins [] = array (
-				"INNER JOIN",
+				$type,
 				$sourceTable,
 				$sourceColumn,
 				$targetTable,
@@ -384,19 +437,19 @@ class Parameters {
 	 *        	Start row
 	 * @param int $items
 	 *        	Number of rows the fetch
-	 * @throws \Wms\Exception
+	 * @throws \Exception
 	 */
 	public function registerLimit($start, $items) {
 		// Check if function is allowed within current command
-		if ((SMART_PDO_LIMIT & self::commandList [$this->command]) == 0) {
-			throw new \Wms\Exception ( "Cannot register LIMIT with current command: " . $this->command );
+		if ((Config::PDO_LIMIT & Config::commandList [$this->command]) == 0) {
+			throw new \Exception ( "Cannot register LIMIT with current command: " . $this->command );
 		}
 		// Validate argument types
 		if (! is_int ( $start )) {
-			throw new \Wms\Exception ( "Expected integer, '" . gettype ( $start ) . "' provided" );
+			throw new \Exception ( "Expected integer, '" . gettype ( $start ) . "' provided" );
 		}
 		if (! is_int ( $items )) {
-			throw new \Wms\Exception ( "Expected integer, '" . gettype ( $items ) . "' provided" );
+			throw new \Exception ( "Expected integer, '" . gettype ( $items ) . "' provided" );
 		}
 		// Set LIMIT values
 		$this->limit = array (
@@ -437,13 +490,12 @@ class Parameters {
 	 *        	True for ASC otherwise DESC
 	 * @param bool $table
 	 *        	Target table, NULL for master table
-	 * @throws \Wms\Exception
+	 * @throws \Exception
 	 */
 	public function registerOrderBy($column, $asc, $table) {
-
 		// Check if function is allowed within current command
-		if ((SMART_PDO_ORDERBY & self::commandList [$this->command]) == 0) {
-			throw new \Wms\Exception ( "Cannot register ORDER BY with current command: " . $this->command );
+		if ((Config::PDO_ORDERBY & Config::commandList [$this->command]) == 0) {
+			throw new \Exception ( "Cannot register ORDER BY with current command: " . $this->command );
 		}
 		//
 		if (! is_string ( $column )) {
@@ -451,6 +503,13 @@ class Parameters {
 		}
 		if (! is_bool ( $asc )) {
 			throw new \Exception ( "Expected bool, '" . gettype ( $asc ) . "' provided" );
+		}
+		// Verify Source columns exists
+		if (! $this->_ColumnExists ( $table, $column )) {
+			throw new \Exception ( sprintf ( "Table column `%s`.`%s` does not exist!", $table, $column ) );
+		}
+		if (! in_array ( $table, $this->tables )) {
+			throw new \Exception ( sprintf ( "Table `%s` is not available at this moment!", $table ) );
 		}
 
 		$this->order [] = array (
@@ -519,7 +578,7 @@ class Parameters {
 	 */
 	public function registerWhere($table, $column, $comparison, $value) {
 		// Check if function is allowed within current command
-		if ((SMART_PDO_WHERE & self::commandList [$this->command]) == 0) {
+		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
 			throw new \Exception ( "Cannot register WHERE with current command: " . $this->command );
 		}
 		// Validate argument types
@@ -558,14 +617,21 @@ class Parameters {
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
-	 * @param unknown $column
-	 * @param unknown $not
-	 * @param unknown $table
-	 * @param unknown ...$params
-	 *
+	 * @param string $column
+	 *        	Column name
+	 * @param array $list
+	 *        	(multiple) strings for WHERE IN
+	 * @param bool $not
+	 *        	Whether is must be in the list or not
+	 * @param string $table
+	 *        	Target table, NULL for master table
 	 * @throws \Exception
 	 */
 	public function registerWhereIn($column, $list, $not, $table) {
+		// Check if function is allowed within current command
+		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
+			throw new \Exception ( "Cannot register WHERE IN with current command: " . $this->command );
+		}
 		// Validate argument types
 		if (! is_string ( $column )) {
 			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' provided" );

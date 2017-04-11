@@ -27,7 +27,27 @@ interface Rows {
 	 * @throws \Wms\Exception
 	 */
 	function __Construct(\SmartPDO\Interfaces\Database $db, \SmartPDO\Parameters $parameters);
-	
+
+	/**
+	 * Get the ID of the last inserted row
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return null|int|string
+	 */
+	function getInsertedID();
+
+	/**
+	 * Get the used QUERY
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return string
+	 */
+	function getQuery();
+
 	/**
 	 * Get the rows
 	 *
@@ -37,18 +57,7 @@ interface Rows {
 	 * @return array
 	 */
 	function getRows();
-	
-	
-	/**
-	 * Get the used QUERY
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 * 
-	 * @return array
-	 */
-	function getQuery();
-	
+
 	/**
 	 * Get the amount of rows
 	 *

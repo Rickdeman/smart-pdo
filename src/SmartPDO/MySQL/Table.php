@@ -65,18 +65,18 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 * @see \SmartPDO\Interfaces\Table::addInnerJoin()
 	 *
 	 * @param string $targetTable
-	 *        	Source table name
+	 *        	Target table name
 	 * @param string $targetColumn
-	 *        	Source table column
+	 *        	Target table column, null for master table ID
 	 * @param string $sourceTable
-	 *        	Target table, NULL for master table
+	 *        	Source table, NULL for master table
 	 * @param string $sourceColumn
-	 *        	Target table column, null for ID
+	 *        	Source table column, null for ID
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function addInnerJoin($targetTable, $targetColumn, $sourceTable = null, $sourceColumn = null) {
-		// Use specified table or master table
+	public function addInnerJoin($targetTable, $targetColumn = null, $sourceTable = null, $sourceColumn = null) {
+		$targetColumn = $targetColumn != null ? $targetColumn : $this->tableName . "ID";
 		$sourceTable = $sourceTable != null ? $sourceTable : $this->tableName;
 		$sourceColumn = $sourceColumn != null ? $sourceColumn : "ID";
 		// Insert new INNER JOIN dataset
@@ -105,8 +105,8 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function addInsert($column, $value) {
-		// TODO: Implement addInsert
-		throw new \Exception ( "Not implemented" );
+		// Register new INSERT key value
+		$this->parameters->registerInsert ( $column, $value );
 		// Return current object
 		return $this;
 	}
@@ -118,18 +118,18 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 * @see \SmartPDO\Interfaces\Table::addLeftJoin()
 	 *
 	 * @param string $targetTable
-	 *        	Source table name
+	 *        	Target table name
 	 * @param string $targetColumn
-	 *        	Source table column
+	 *        	Target table column, null for master table ID
 	 * @param string $sourceTable
-	 *        	Target table, NULL for master table
+	 *        	Source table, NULL for master table
 	 * @param string $sourceColumn
-	 *        	Target table column, null for ID
+	 *        	Source table column, null for ID
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function addLeftJoin($targetTable, $targetColumn, $sourceTable, $sourceColumn) {
-		// Use specified table or master table
+	public function addLeftJoin($targetTable, $targetColumn = null, $sourceTable = null, $sourceColumn = null) {
+		$targetColumn = $targetColumn != null ? $targetColumn : $this->tableName . "ID";
 		$sourceTable = $sourceTable != null ? $sourceTable : $this->tableName;
 		$sourceColumn = $sourceColumn != null ? $sourceColumn : "ID";
 		// Insert new LEFT JOIN dataset
@@ -190,18 +190,18 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 * @see \SmartPDO\Interfaces\Table::addRightJoin()
 	 *
 	 * @param string $targetTable
-	 *        	Source table name
+	 *        	Target table name
 	 * @param string $targetColumn
-	 *        	Source table columns
+	 *        	Target table column, null for master table ID
 	 * @param string $sourceTable
-	 *        	Target table, NULL for master table
+	 *        	Source table, NULL for master table
 	 * @param string $sourceColumn
-	 *        	Target table column, null for ID
+	 *        	Source table column, null for ID
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function addRightJoin($targetTable, $targetColumn, $sourceTable, $sourceColumn) {
-		// Use specified table or master table
+	public function addRightJoin($targetTable, $targetColumn = null, $sourceTable = null, $sourceColumn = null) {
+		$targetColumn = $targetColumn != null ? $targetColumn : $this->tableName . "ID";
 		$sourceTable = $sourceTable != null ? $sourceTable : $this->tableName;
 		$sourceColumn = $sourceColumn != null ? $sourceColumn : "ID";
 		// Insert new RIGHT JOIN dataset
@@ -222,9 +222,9 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 * @see \SmartPDO\Interfaces\Table::addSet()
 	 *
 	 * @param string $column
-	 *        	Column name
+	 *        	table column
 	 * @param string|integer $value
-	 *        	Value to be inserted
+	 *        	Value to be updated
 	 *
 	 * @throws \Exception
 	 * @return \SmartPDO\MySQL\Table

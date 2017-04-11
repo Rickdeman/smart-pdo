@@ -34,17 +34,17 @@ interface Table {
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
 	 * @param string $targetTable
-	 *        	Source table name
+	 *        	Target table name
 	 * @param string $targetColumn
-	 *        	Source table column
+	 *        	Target table column, null for master table ID
 	 * @param string $sourceTable
-	 *        	Target table, NULL for master table
+	 *        	Source table, NULL for master table
 	 * @param string $sourceColumn
-	 *        	Target table column, null for ID
+	 *        	Source table column, null for ID
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function addInnerJoin($targetTable, $targetColumn, $sourceTable = null, $sourceColumn = null);
+	public function addInnerJoin($targetTable, $targetColumn = null, $sourceTable = null, $sourceColumn = null);
 
 	/**
 	 * Add key value for inserting
@@ -68,17 +68,17 @@ interface Table {
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
 	 * @param string $targetTable
-	 *        	Source table name
+	 *        	Target table name
 	 * @param string $targetColumn
-	 *        	Source table column
+	 *        	Target table column, null for master table ID
 	 * @param string $sourceTable
-	 *        	Target table, NULL for master table
+	 *        	Source table, NULL for master table
 	 * @param string $sourceColumn
-	 *        	Target table column, null for ID
+	 *        	Source table column, null for ID
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function addLeftJoin($targetTable, $targetColumn, $sourceTable, $sourceColumn);
+	public function addLeftJoin($targetTable, $targetColumn = null, $sourceTable = null, $sourceColumn = null);
 
 	/**
 	 * Add Or
@@ -117,17 +117,17 @@ interface Table {
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
 	 * @param string $targetTable
-	 *        	Source table name
+	 *        	Target table name
 	 * @param string $targetColumn
-	 *        	Source table columns
+	 *        	Target table column, null for master table ID
 	 * @param string $sourceTable
-	 *        	Target table, NULL for master table
+	 *        	Source table, NULL for master table
 	 * @param string $sourceColumn
-	 *        	Target table column, null for ID
+	 *        	Source table column, null for ID
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function addRightJoin($targetTable, $targetColumn, $sourceTable, $sourceColumn);
+	public function addRightJoin($targetTable, $targetColumn = null, $sourceTable = null, $sourceColumn = null);
 
 	/**
 	 * Add SET

@@ -1,31 +1,32 @@
 <?php
-
-require_once __DIR__ . '/../vendor/autoload.php'; 
+require_once __DIR__ . '/../vendor/autoload.php';
 
 /**
- * SmartPDO MySQL handler 
- * 
+ * SmartPDO MySQL handler
+ *
  * @var \SmartPDO\MySQL $MySQL
  */
-$MySQL = new \SmartPDO\MySQL("smartpdo", "PvZZMGeeAp0UPtC4", "smartpdo", "spdo");
-
-
-
-
+$MySQL = new \SmartPDO\MySQL ( "smartpdo", "PvZZMGeeAp0UPtC4", "smartpdo", "spdo" );
 
 /**
- * Get a table from the database
+ * addOrderBy - Example #2
+ *
+ * When creating an ORDER BY there are 2 options with a Bool ( default: True )
+ * - True Create a new OR group
+ * - False Creates a left handed OR
+ *
+ * Try no to end with an 'addOr' even though its rejected
  *
  * @var \SmartPDO\MySQL\Table $table
  */
-$table = $MySQL->getTable('customer')->addWhere('ID', 1)->addInnerJoin('licences', 'customerId');
+$table = $MySQL->getTable ( 'customer' )->update ();
 
-
-/** 
+/**
+ *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */
-$rows = $table->execute();
+$rows = $table->execute ();
 
-print_r($rows->getRows());
-print_r($rows->getQuery());
-
+echo $rows->rowCount () . " - ";
+print_r ( $rows->getRows () );
+print_r ( $rows->getQuery () );
