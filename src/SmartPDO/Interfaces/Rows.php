@@ -13,6 +13,7 @@ namespace SmartPDO\Interfaces;
  *
  */
 interface Rows {
+
 	/**
 	 * Mysql table row handler
 	 *

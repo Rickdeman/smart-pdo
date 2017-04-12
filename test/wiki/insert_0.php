@@ -1,7 +1,7 @@
 <?php
 
 /**
- * addInsert - Example #2
+ * insert - Example #2
  *
  * When INSERT in the database the 'insert ()' must be called first! due to checks
  * For example: You cannot do an INSERT when you do an SELECT
@@ -14,7 +14,7 @@ $table = $MySQL->getTable ( 'customer' )->insert ();
  *
  * @var \SmartPDO\MySQL\Table\Rows $row
  */
-//$rows = $table->addInsert ( 'name', 'Customer test' )->execute ();
+$rows = $table->value ( 'name', 'Customer test' )->execute ();
 
-//echo "ID : '" . $rows->getInsertedID () . "'" . PHP_EOL;
-//print_r ( $rows->getQuery () );
+echo "ID : '" . $rows->getInsertedID () . "'" . PHP_EOL;
+print_r ( $rows->getQuery () );

@@ -1,13 +1,13 @@
 <?php
 
 /**
- * addInnerJoin - Example #3
+ * innerJoin - Example #3
  *
  * addInnerJoin parameters are all defined
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */
-$rows = $MySQL->getTable ( 'customer' )->addRightJoin ( 'licences', 'customerID', 'customer', 'ID' )->execute ();
+$rows = $MySQL->getTable ( 'customer' )->rightJoin ( 'licences', 'customerID', 'customer', 'ID' )->execute ();
 
 echo $rows->rowCount () . " - ";
 print_r ( $rows->getRows () );

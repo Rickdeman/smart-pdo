@@ -1,4 +1,6 @@
 <?php
+use SmartPDO\Config;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 /**
@@ -7,6 +9,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
  * @var \SmartPDO\MySQL $MySQL
  */
 $MySQL = new \SmartPDO\MySQL ( "smartpdo", "PvZZMGeeAp0UPtC4", "smartpdo", "spdo" );
+
+Config::$readOnly = true;
 
 /**
  * addOrderBy - Example #2
@@ -19,7 +23,7 @@ $MySQL = new \SmartPDO\MySQL ( "smartpdo", "PvZZMGeeAp0UPtC4", "smartpdo", "spdo
  *
  * @var \SmartPDO\MySQL\Table $table
  */
-$table = $MySQL->getTable ( 'customer' )->update ();
+$table = $MySQL->getTable ( 'customer' )->columns ( "ID", "licences.customerID" )->innerJoin ( 'licences' );
 
 /**
  *

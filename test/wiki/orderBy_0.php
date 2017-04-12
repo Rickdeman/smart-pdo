@@ -1,7 +1,7 @@
 <?php
 
 /**
- * addOrderBy - Example #1
+ * orderBy - Example #1
  *
  * When creating an ORDER BY you must specify which colum, and can specify ASC|DESC
  *
@@ -9,8 +9,8 @@
  *
  * @var \SmartPDO\MySQL\Table $table
  */
-$table = $MySQL->getTable ( 'customer' )->addInnerJoin ( 'licences' );
-$table->addOrderBy ( "ID" )->addOrderBy ( "licenseID", false, 'licences' );
+$table = $MySQL->getTable ( 'customer' );
+$table->orderBy ( "ID" )->orderBy ( "name", false );
 
 /**
  *

@@ -100,6 +100,13 @@ class Parameters {
 	private $joins = null;
 
 	/**
+	 * placeholder for each SET key, value
+	 *
+	 * @var array
+	 */
+	private $set = null;
+
+	/**
 	 * Placeholder for the current table
 	 *
 	 * @var string
@@ -144,26 +151,12 @@ class Parameters {
 	 *        	Column name
 	 * @return boolean
 	 */
-	private function _ColumnExists($table, $column) {
+	public function columnExists($table, $column) {
 		try {
 			return (in_array ( $column, explode ( ',', $this->mysqlTables [$table] ) ));
 		} catch ( Exception $e ) {
 			return false;
 		}
-	}
-
-	/**
-	 * Verify that a Table exists
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @param string $table
-	 *        	Tablename * @param unknown $table
-	 * @return boolean
-	 */
-	private function _tableExists($table) {
-		return in_array ( $table, array_keys ( $this->mysqlTables ) );
 	}
 
 	/**
@@ -260,6 +253,20 @@ class Parameters {
 	}
 
 	/**
+	 * Get the SET collection
+	 *
+	 * arrays markup: column => value
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return array
+	 */
+	public function getSet() {
+		return $this->set;
+	}
+
+	/**
 	 * Get the main table
 	 *
 	 * @version 1
@@ -296,6 +303,18 @@ class Parameters {
 	public function getWhere() {
 		return $this->where;
 	}
+	/**
+	 * FunctionDescription
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @param string $columns
+	 *        	Columns to be shown, fully named when using JOIN(s)
+	 */
+	public function registerColumns(...$columns) {
+		$this->columns = $columns;
+	}
 
 	/**
 	 * Register the sql command
@@ -329,25 +348,25 @@ class Parameters {
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
-	 * @param string $columns
+	 * @param string $column
 	 *        	Fully qualified table column
 	 * @param string $value
 	 *        	Value to be inserted
 	 */
-	public function registerInsert($columns, $value) {
+	public function registerInsert($column, $value) {
 		// Check if function is allowed within current command
 		if ((Config::PDO_INSERT & Config::commandList [$this->command]) == 0) {
 			throw new \Exception ( "Cannot register INSERT with current command: " . $this->command );
 		}
 		// Validate argument types
-		if (! is_string ( $columns )) {
-			throw new \Exception ( "Expected string, '" . gettype ( $columns ) . "' provided" );
+		if (! is_string ( $column )) {
+			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' provided" );
 		}
 		if (! is_array ( $this->insert )) {
 			$this->insert = array ();
 		}
 		// Add set parameters
-		$this->insert [$columns] = $value;
+		$this->insert [$column] = $value;
 	}
 
 	/**
@@ -395,19 +414,19 @@ class Parameters {
 			throw new \Exception ( "Expected 'targetColumn' to be string, '" . gettype ( $targetColumn ) . "' provided" );
 		}
 		// Verify Source table exists
-		if (! $this->_tableExists ( $sourceTable )) {
+		if (! $this->tableExists ( $sourceTable )) {
 			throw new \Exception ( sprintf ( "Source table `%s` does not exist!", $sourceTable ) );
 		}
 		// Verify Source columns exists
-		if (! $this->_ColumnExists ( $sourceTable, $sourceColumn )) {
+		if (! $this->columnExists ( $sourceTable, $sourceColumn )) {
 			throw new \Exception ( sprintf ( "Source column `%s`.`%s` does not exist!", $sourceTable, $sourceColumn ) );
 		}
 		// Verify Target table exists
-		if (! $this->_tableExists ( $targetTable )) {
+		if (! $this->tableExists ( $targetTable )) {
 			throw new \Exception ( sprintf ( "Target table `%s` does not exist!", $targetTable ) );
 		}
 		// Verify Source columns exists
-		if (! $this->_ColumnExists ( $targetTable, $targetColumn )) {
+		if (! $this->columnExists ( $targetTable, $targetColumn )) {
 			throw new \Exception ( sprintf ( "Source column `%s`.`%s` does not exist!", $targetTable, $targetColumn ) );
 		}
 		if (! in_array ( $sourceTable, $this->tables )) {
@@ -505,7 +524,7 @@ class Parameters {
 			throw new \Exception ( "Expected bool, '" . gettype ( $asc ) . "' provided" );
 		}
 		// Verify Source columns exists
-		if (! $this->_ColumnExists ( $table, $column )) {
+		if (! $this->columnExists ( $table, $column )) {
 			throw new \Exception ( sprintf ( "Table column `%s`.`%s` does not exist!", $table, $column ) );
 		}
 		if (! in_array ( $table, $this->tables )) {
@@ -536,6 +555,33 @@ class Parameters {
 		}
 		// Register the prefix
 		$this->prefix = $prefix;
+	}
+
+	/**
+	 * Register a SET key value
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @param string $column
+	 *        	table column
+	 * @param string|integer $value
+	 *        	Value to be updated
+	 * @throws \Exception
+	 */
+	public function registerSet($column, $value) {
+		// Check if function is allowed within current command
+		if ((Config::PDO_UPDATE & Config::commandList [$this->command]) == 0) {
+			throw new \Exception ( "Cannot register SET with current command: " . $this->command );
+		}
+		// Validate column is a string
+		if (! is_string ( $column )) {
+			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' provided" );
+		}
+		if (! is_array ( $this->set )) {
+			$this->set = array ();
+		}
+		$this->set [$column] = $value;
 	}
 
 	/**
@@ -590,11 +636,11 @@ class Parameters {
 			throw new \Exception ( "provided invalid compare: '" . $comparison . "'. see compareList for more info" );
 		}
 		// Verify table exists
-		if (! $this->_tableExists ( $table )) {
+		if (! $this->tableExists ( $table )) {
 			throw new \Exception ( sprintf ( "Table `%s` does not exist!", $table ) );
 		}
 		// Verify columns exists
-		if (! $this->_ColumnExists ( $table, $column )) {
+		if (! $this->columnExists ( $table, $column )) {
 			throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $table, $column ) );
 		}
 
@@ -637,11 +683,11 @@ class Parameters {
 			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' provided" );
 		}
 		// Verify table exists
-		if (! $this->_tableExists ( $table )) {
+		if (! $this->tableExists ( $table )) {
 			throw new \Exception ( sprintf ( "Table `%s` does not exist!", $table ) );
 		}
 		// Verify columns exists
-		if (! $this->_ColumnExists ( $table, $column )) {
+		if (! $this->columnExists ( $table, $column )) {
 			throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $table, $column ) );
 		}
 		if ($this->where == null) {
@@ -655,5 +701,19 @@ class Parameters {
 				$list,
 				$not
 		);
+	}
+
+	/**
+	 * Verify that a Table exists
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @param string $table
+	 *        	Tablename * @param unknown $table
+	 * @return boolean
+	 */
+	public function tableExists($table) {
+		return in_array ( $table, array_keys ( $this->mysqlTables ) );
 	}
 }
