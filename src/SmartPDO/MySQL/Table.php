@@ -62,12 +62,36 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
+	 * @see \SmartPDO\Interfaces\Table::between()
+	 *
+	 * @param string $column
+	 *        	table column
+	 * @param double|int|\DateTime|string $start
+	 *        	Start value
+	 * @param double|int|\DateTime|string $stop
+	 *        	End value
+	 * @param bool $not
+	 *        	Whether is must be in the list or not
+	 * @param string $table
+	 *        	Target table, NULL for root table
+	 *        	
+	 * @return \SmartPDO\MySQL\Table
+	 */
+	public function between($column, $start, $stop, $not = false, $table = null) {
+		$table = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
+		$this->parameters->registerBetween ( $column, $start, $stop, $not, $table );
+		return $this;
+	}
+	
+	/**
+	 *
+	 * {@inheritdoc}
+	 *
 	 * @see \SmartPDO\Interfaces\Table::columns()
 	 *
 	 * @param string $columns
 	 *        	Columns to be shown, fully named when using JOIN(s)
 	 *        	
-	 * @throws \Exception
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function columns(...$columns) {
@@ -139,8 +163,8 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *        	
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function In($column, $list, $not = false, $table = null) {
-		$tbl = $table != null ? $table : $this->tableName;
+	public function in($column, $list, $not = false, $table = null) {
+		$tbl = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
 		$this->parameters->registerIn ( $column, $list, $not, $tbl );
 		return $this;
 	}
@@ -164,10 +188,15 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 */
 	public function innerJoin($targetTable, $targetColumn = null, $sourceTable = null, $sourceColumn = null) {
 		$targetColumn = $targetColumn != null ? $targetColumn : $this->tableName . "ID";
-		$sourceTable = $sourceTable != null ? $sourceTable : $this->tableName;
+		$sourceTable = $this->mysql->getTableName ( $sourceTable != null ? $sourceTable : $this->tableName );
 		$sourceColumn = $sourceColumn != null ? $sourceColumn : "ID";
 		// Insert new INNER JOIN dataset
-		$this->parameters->registerJoin ( "INNER JOIN", $this->mysql->getTableName ( $sourceTable ), $sourceColumn, $this->mysql->getTableName ( $targetTable ), $targetColumn );
+		$this->parameters->registerJoin ( 
+				"INNER JOIN", 
+				$this->mysql->getTableName ( $sourceTable ), 
+				$sourceColumn, 
+				$this->mysql->getTableName ( $targetTable ), 
+				$targetColumn );
 		// Return current object
 		return $this;
 	}
@@ -206,10 +235,15 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 */
 	public function leftJoin($targetTable, $targetColumn = null, $sourceTable = null, $sourceColumn = null) {
 		$targetColumn = $targetColumn != null ? $targetColumn : $this->tableName . "ID";
-		$sourceTable = $sourceTable != null ? $sourceTable : $this->tableName;
+		$sourceTable = $this->mysql->getTableName ( $sourceTable != null ? $sourceTable : $this->tableName );
 		$sourceColumn = $sourceColumn != null ? $sourceColumn : "ID";
 		// Insert new LEFT JOIN dataset
-		$this->parameters->registerJoin ( "LEFT JOIN", $this->mysql->getTableName ( $sourceTable ), $sourceColumn, $this->mysql->getTableName ( $targetTable ), $targetColumn );
+		$this->parameters->registerJoin ( 
+				"LEFT JOIN", 
+				$this->mysql->getTableName ( $sourceTable ), 
+				$sourceColumn, 
+				$this->mysql->getTableName ( $targetTable ), 
+				$targetColumn );
 		// Return current object
 		return $this;
 	}
@@ -301,10 +335,15 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 */
 	public function rightJoin($targetTable, $targetColumn = null, $sourceTable = null, $sourceColumn = null) {
 		$targetColumn = $targetColumn != null ? $targetColumn : $this->tableName . "ID";
-		$sourceTable = $sourceTable != null ? $sourceTable : $this->tableName;
+		$sourceTable = $this->mysql->getTableName ( $sourceTable != null ? $sourceTable : $this->tableName );
 		$sourceColumn = $sourceColumn != null ? $sourceColumn : "ID";
 		// Insert new RIGHT JOIN dataset
-		$this->parameters->registerJoin ( "RIGHT JOIN", $this->mysql->getTableName ( $sourceTable ), $sourceColumn, $this->mysql->getTableName ( $targetTable ), $targetColumn );
+		$this->parameters->registerJoin ( 
+				"RIGHT JOIN", 
+				$this->mysql->getTableName ( $sourceTable ), 
+				$sourceColumn, 
+				$this->mysql->getTableName ( $targetTable ), 
+				$targetColumn );
 		// Return current object
 		return $this;
 	}

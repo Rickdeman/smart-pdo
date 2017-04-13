@@ -194,7 +194,11 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		// Add all values for the prepared statement
 		$this->values = array_merge ( $this->values, array_values ( $this->parameters->getInsert () ) );
 		// Return result
-		return sprintf ( "INSERT INTO `%s` (`%s`) VALUES (%s)", $this->parameters->getTable (), implode ( '`, `', $columns ), implode ( ", ", $values ) );
+		return sprintf ( 
+				"INSERT INTO `%s` (`%s`) VALUES (%s)", 
+				$this->parameters->getTable (), 
+				implode ( '`, `', $columns ), 
+				implode ( ", ", $values ) );
 	}
 	
 	/**
@@ -337,7 +341,11 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 					// Loop through all columns
 					foreach ( $this->mysql->getTableColumns ( $table ) as $column ) {
 						// Add new column with alias
-						$tableColumns [] = sprintf ( "`%s`.`%s` as `%s`", $table, $column, $this->_prependTableName ( $column, $table ) );
+						$tableColumns [] = sprintf ( 
+								"`%s`.`%s` as `%s`", 
+								$table, 
+								$column, 
+								$this->_prependTableName ( $column, $table ) );
 					}
 				}
 			} else {
@@ -361,7 +369,11 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 						throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $tmpTable, $tmpColumn ) );
 					}
 					// Add new column with alias
-					$tableColumns [] = sprintf ( "`%s`.`%s` as `%s`", $tmpTable, $tmpColumn, $this->_prependTableName ( $tmpColumn, $tmpTable ) );
+					$tableColumns [] = sprintf ( 
+							"`%s`.`%s` as `%s`", 
+							$tmpTable, 
+							$tmpColumn, 
+							$this->_prependTableName ( $tmpColumn, $tmpTable ) );
 				}
 			}
 			// Add each table column in a seperate line
@@ -398,7 +410,11 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		// Add all values for the prepared statement
 		$this->values = array_merge ( $this->values, array_values ( $this->parameters->getSet () ) );
 		// Return result
-		return sprintf ( "UPDATE `%s` SET" . PHP_EOL . "\t`%s` = ?", $this->parameters->getTable (), implode ( sprintf ( '` = ?,%s`', PHP_EOL . "\t" ), $columns ), implode ( ", ", $values ) ) . PHP_EOL;
+		return sprintf ( 
+				"UPDATE `%s` SET" . PHP_EOL . "\t`%s` = ?", 
+				$this->parameters->getTable (), 
+				implode ( sprintf ( '` = ?,%s`', PHP_EOL . "\t" ), $columns ), 
+				implode ( ", ", $values ) ) . PHP_EOL;
 	}
 	
 	/**
@@ -476,19 +492,28 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 				
 				case "IN" :
 					if ($this->multipleTables == true) {
-						$result .= sprintf ( "`%s`.`%s` %sIN (%s)", $w [1], $w [2], $w [4] != true ? "" : "NOT ", implode ( ', ', array_fill ( 0, count ( $w [3] ), "?" ) ) );
+						$result .= sprintf ( 
+								"`%s`.`%s` %sIN (%s)", 
+								$w [1], 
+								$w [2], 
+								$w [4] != true ? "" : "NOT ", 
+								implode ( ', ', array_fill ( 0, count ( $w [3] ), "?" ) ) );
 						$this->values = array_merge ( $this->values, $w [3] );
 					} else {
-						$result .= sprintf ( "`%s` %sIN (%s)", $w [2], $w [4] != true ? "" : "NOT ", implode ( ', ', array_fill ( 0, count ( $w [3] ), "?" ) ) );
+						$result .= sprintf ( 
+								"`%s` %sIN (%s)", 
+								$w [2], 
+								$w [4] != true ? "" : "NOT ", 
+								implode ( ', ', array_fill ( 0, count ( $w [3] ), "?" ) ) );
 						$this->values = array_merge ( $this->values, $w [3] );
 					}
 					break;
 				
 				case "LIKE" :
 					if ($this->multipleTables == true) {
-						$result .= sprintf ( "`%s` %sLIKE ?", $w [2], $w [4] == true ? 'NOT ' : '' );
-					} else {
 						$result .= sprintf ( "`%s`.`%s` %sLIKE ?", $w [1], $w [2], $w [4] == true ? 'NOT ' : '' );
+					} else {
+						$result .= sprintf ( "`%s` %sLIKE ?", $w [2], $w [4] == true ? 'NOT ' : '' );
 					}
 					$this->values [] = $w [3];
 					
@@ -496,6 +521,21 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 						$result .= " ESCAPE ?";
 						$this->values [] = $w [5];
 					}
+					break;
+				
+				case "BETWEEN" :
+					
+					if (is_object ( $w [3] ) && get_class ( $w [3] ) == "DateTime") {
+						$w [3] = $w [3]->format ( "Y-m-d H:i:s" );
+						$w [4] = $w [4]->format ( "Y-m-d H:i:s" );
+					}
+					if ($this->multipleTables == true) {
+						$result .= sprintf ( "`%s`.`%s` %sBETWEEN ? AND ?", $w [1], $w [2], $w [5] == true ? 'NOT ' : '' );
+					} else {
+						$result .= sprintf ( "`%s` %sBETWEEN ? AND ?", $w [2], $w [5] == true ? 'NOT ' : '' );
+					}
+					$this->values [] = $w [3];
+					$this->values [] = $w [4];
 					break;
 				
 				case "OR" :

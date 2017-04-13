@@ -23,7 +23,7 @@ Config::$readOnly = true;
  *
  * @var \SmartPDO\MySQL\Table $table
  */
-$table = $MySQL->getTable ( 'customer' )->like ( 'name', '%r d%' );
+$table = $MySQL->getTable ( 'customer' )->between ( 'ID', 2, 10 );
 
 /**
  *

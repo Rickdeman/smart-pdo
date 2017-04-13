@@ -303,6 +303,55 @@ class Parameters {
 	public function getWhere() {
 		return $this->where;
 	}
+	public function registerBetween($column, $start, $stop, $not, $table) {
+		// Check if function is allowed within current command
+		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
+			throw new \Exception ( "Cannot register WHERE with current command: " . $this->command );
+		}
+		// Validate argument types
+		if (! is_string ( $column )) {
+			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' provided" );
+		}
+		// Verify table exists
+		if (! $this->tableExists ( $table )) {
+			throw new \Exception ( sprintf ( "Table `%s` does not exist!", $table ) );
+		}
+		// Verify table is defined
+		if (! in_array ( $table, $this->tables )) {
+			throw new \Exception ( sprintf ( "Source table `%s` is not available at this moment!", $table ) );
+		}
+		// Verify columns exists
+		if (! $this->columnExists ( $table, $column )) {
+			throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $table, $column ) );
+		}
+		$allowed = false;
+		// Check both: double or int
+		if ((is_double ( $start ) && is_double ( $stop )) || (is_int ( $start ) && is_int ( $stop ))) {
+			$allowed = true;
+		}
+		// Check both: DateTime
+		if ((is_object ( $start ) && is_object ( $stop )) && (get_class ( $start ) == "DateTime" && get_class ( $stop ) == "DateTime")) {
+			$allowed = true;
+		}
+		if (is_string ( $start ) && is_string ( $stop )) {
+			$allowed = true;
+		}
+		// Start and stop must bo both type of: double | int | DateTime
+		if ($allowed !== true) {
+			throw new \Exception ( "Start and stop values are not equal or not supported" );
+		}
+		
+		// Register Where command
+		$this->where [] = array (
+				'BETWEEN',
+				$table,
+				$column,
+				$start,
+				$stop,
+				$not 
+		);
+	}
+	
 	/**
 	 * FunctionDescription
 	 *

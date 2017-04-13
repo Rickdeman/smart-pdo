@@ -28,6 +28,25 @@ interface Table {
 	function __Construct(\SmartPDO\Interfaces\Database $db, $table);
 	
 	/**
+	 * add BETWEEN
+	 *
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 * @version 1
+	 *         
+	 * @param string $column
+	 *        	table column
+	 * @param double|int|\DateTime|string $start
+	 *        	Start value
+	 * @param double|int|\DateTime|string $stop
+	 *        	End value
+	 * @param bool $not
+	 *        	Whether is must be in the list or not
+	 * @param string $table
+	 *        	Target table, NULL for root table
+	 */
+	public function between($column, $start, $stop, $not = false, $table = null);
+	
+	/**
 	 * Set columns to be selected
 	 *
 	 * @version 1
@@ -92,7 +111,7 @@ interface Table {
 	 *        	
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function In($column, $list, $not = false, $table = null);
+	public function in($column, $list, $not = false, $table = null);
 	
 	/**
 	 * Add INNER JOIN
