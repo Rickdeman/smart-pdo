@@ -23,7 +23,7 @@ Config::$readOnly = true;
  *
  * @var \SmartPDO\MySQL\Table $table
  */
-$table = $MySQL->getTable ( 'customer' )->columns ( "ID", "licences.customerID" )->innerJoin ( 'licences' );
+$table = $MySQL->getTable ( 'customer' )->like ( 'name', '%r d%' );
 
 /**
  *

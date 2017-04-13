@@ -10,33 +10,33 @@ namespace SmartPDO;
  *
  * @author Rick de Man <rick@rickdeman.nl>
  * @version 1
- *
+ *         
  */
 class Parameters {
-
+	
 	/**
 	 * Placeholder for the columns to be selected, default = array( '*' )
 	 *
 	 * @var array
 	 */
 	private $columns = array (
-			'*'
+			'*' 
 	);
-
+	
 	/**
 	 * Placeholder for the main query statement: SELECT DELETE etc
 	 *
 	 * @var string
 	 */
 	private $command = 'SELECT';
-
+	
 	/**
 	 * Storage for all MySQL tables with columns
 	 *
 	 * @var array
 	 */
 	private $mysqlTables = null;
-
+	
 	/**
 	 * Available compare methods
 	 *
@@ -50,9 +50,9 @@ class Parameters {
 			">",
 			">=",
 			"<",
-			"<="
+			"<=" 
 	);
-
+	
 	/**
 	 * Available JOIN types
 	 *
@@ -61,90 +61,90 @@ class Parameters {
 	const JoinList = array (
 			"INNER JOIN",
 			"LEFT JOIN",
-			"RIGHT JOIN"
+			"RIGHT JOIN" 
 	);
-
+	
 	/**
 	 * Placeholder for the LIMIT
 	 *
 	 * @var array
 	 */
 	private $limit = null;
-
+	
 	/**
 	 * Placeholder for each ORDER
 	 *
 	 * @var array
 	 */
 	private $order = null;
-
+	
 	/**
 	 * Placeholder for the table prefix
 	 *
 	 * @var string
 	 */
 	private $prefix = "";
-
+	
 	/**
 	 * Placeholder for each SET
 	 *
 	 * @var array
 	 */
 	private $insert = null;
-
+	
 	/**
 	 * Placeholder for each JOIN
 	 *
 	 * @var array
 	 */
 	private $joins = null;
-
+	
 	/**
 	 * placeholder for each SET key, value
 	 *
 	 * @var array
 	 */
 	private $set = null;
-
+	
 	/**
 	 * Placeholder for the current table
 	 *
 	 * @var string
 	 */
 	private $table = "";
-
+	
 	/**
 	 * Placeholder for all selected table
 	 *
 	 * @var array
 	 */
 	private $tables = array ();
-
+	
 	/**
 	 * Placeholder for all WHERE datasets
 	 *
 	 * @var array
 	 */
 	private $where = null;
-
+	
 	/**
 	 * Initialise the Parameter set with the mysql
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @param array $tables
+	 *        
+	 * @param array $tables        	
 	 */
 	function __Construct(array $tables) {
 		$this->mysqlTables = $tables;
 	}
-
+	
 	/**
 	 * Verify that a Table Column exists
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @param string $table
 	 *        	Tablename
 	 * @param string $column
@@ -158,32 +158,32 @@ class Parameters {
 			return false;
 		}
 	}
-
+	
 	/**
 	 * Get the current query command
 	 *
 	 * @see Parameters::commandList
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @return string
 	 */
 	public function getCommand() {
 		return $this->command;
 	}
-
+	
 	/**
 	 * Get the requested columns to be shown
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @return array
 	 */
 	public function getColumns() {
 		return $this->columns;
 	}
-
+	
 	/**
 	 * Get the INSERT collection
 	 *
@@ -191,13 +191,13 @@ class Parameters {
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @return array
 	 */
 	public function getInsert() {
 		return $this->insert;
 	}
-
+	
 	/**
 	 * Get the JOIN collection
 	 *
@@ -205,13 +205,13 @@ class Parameters {
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @return array
 	 */
 	public function getJoins() {
 		return $this->joins;
 	}
-
+	
 	/**
 	 * Get the LIMIT
 	 *
@@ -219,13 +219,13 @@ class Parameters {
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @return array
 	 */
 	public function getLimit() {
 		return $this->limit;
 	}
-
+	
 	/**
 	 * Get the ORDER collection
 	 *
@@ -233,25 +233,25 @@ class Parameters {
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @return array
 	 */
 	public function getOrder() {
 		return $this->order;
 	}
-
+	
 	/**
 	 * Get the table prefix
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @return array
 	 */
 	public function getPrefix() {
 		return $this->prefix;
 	}
-
+	
 	/**
 	 * Get the SET collection
 	 *
@@ -259,37 +259,37 @@ class Parameters {
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @return array
 	 */
 	public function getSet() {
 		return $this->set;
 	}
-
+	
 	/**
 	 * Get the main table
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @return string
 	 */
 	public function getTable() {
 		return $this->table;
 	}
-
+	
 	/**
 	 * Return all tables which will be used
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @return string
 	 */
 	public function getTables() {
 		return $this->tables;
 	}
-
+	
 	/**
 	 * Get the WHERE collection
 	 *
@@ -297,7 +297,7 @@ class Parameters {
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @return array
 	 */
 	public function getWhere() {
@@ -308,25 +308,25 @@ class Parameters {
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @param string $columns
 	 *        	Columns to be shown, fully named when using JOIN(s)
 	 */
 	public function registerColumns(...$columns) {
 		$this->columns = $columns;
 	}
-
+	
 	/**
 	 * Register the sql command
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @see Parameters::commandList
 	 *
 	 * @param string $command
 	 *        	The SQL command type
-	 *
+	 *        	
 	 * @throws \Exception
 	 */
 	public function registerCommand($command) {
@@ -341,13 +341,13 @@ class Parameters {
 		// Register Command
 		$this->command = strtoupper ( $command );
 	}
-
+	
 	/**
 	 * Register an INSERT
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @param string $column
 	 *        	Fully qualified table column
 	 * @param string $value
@@ -368,13 +368,13 @@ class Parameters {
 		// Add set parameters
 		$this->insert [$column] = $value;
 	}
-
+	
 	/**
 	 * Register an JOIN
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @see Parameters::JoinList
 	 * @param string $type
 	 *        	Type of join to be used
@@ -441,17 +441,63 @@ class Parameters {
 				$sourceTable,
 				$sourceColumn,
 				$targetTable,
-				$targetColumn
+				$targetColumn 
 		);
 		$this->tables [] = $targetTable;
 	}
-
+	
+	/**
+	 * Register a LIKE
+	 *
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 * @version 1
+	 *         
+	 * @param unknown $column
+	 *        	Column name
+	 * @param unknown $value
+	 *        	Value to be compared
+	 * @param string $not
+	 *        	if true will change to LIKE NOT
+	 * @param unknown $table
+	 *        	Table name, null for root table
+	 * @param string $escape
+	 *        	Escape character, which can be changed
+	 */
+	public function registerLike($column, $value, $not, $table, $escape) {
+		// Check if function is allowed within current command
+		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
+			throw new \Exception ( "Cannot register WHERE with current command: " . $this->command );
+		}
+		// Validate argument types
+		if (! is_string ( $column )) {
+			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' provided" );
+		}
+		// Verify table exists
+		if (! $this->tableExists ( $table )) {
+			throw new \Exception ( sprintf ( "Table `%s` does not exist!", $table ) );
+		}
+		// Verify columns exists
+		if (! $this->columnExists ( $table, $column )) {
+			throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $table, $column ) );
+		}
+		
+		// Register Where command
+		$this->where [] = array (
+				'LIKE',
+				$table,
+				$column,
+				$value,
+				$not,
+				$escape 
+		);
+	}
+	
 	/**
 	 * Register the LIMIT
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @param int $start
 	 *        	Start row
 	 * @param int $items
@@ -473,17 +519,17 @@ class Parameters {
 		// Set LIMIT values
 		$this->limit = array (
 				$start,
-				$items
+				$items 
 		);
 	}
-
+	
 	/**
 	 * Register an OR within the WHERE statement
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @param boolean $group
+	 *        
+	 * @param boolean $group        	
 	 * @throws \Exception
 	 */
 	public function registerOr($group) {
@@ -493,16 +539,16 @@ class Parameters {
 		// Register Where command
 		$this->where [] = array (
 				'OR',
-				$group
+				$group 
 		);
 	}
-
+	
 	/**
 	 * Register an ORDER BY
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @param string $column
 	 *        	Fully qualified table column
 	 * @param bool $asc
@@ -530,20 +576,20 @@ class Parameters {
 		if (! in_array ( $table, $this->tables )) {
 			throw new \Exception ( sprintf ( "Table `%s` is not available at this moment!", $table ) );
 		}
-
+		
 		$this->order [] = array (
 				$table,
 				$column,
-				$asc
+				$asc 
 		);
 	}
-
+	
 	/**
 	 * Register the database used prefix
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @param string $prefix
 	 *        	Provide the prefix for the table
 	 * @throws \Exception
@@ -556,13 +602,13 @@ class Parameters {
 		// Register the prefix
 		$this->prefix = $prefix;
 	}
-
+	
 	/**
 	 * Register a SET key value
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @param string $column
 	 *        	table column
 	 * @param string|integer $value
@@ -583,13 +629,13 @@ class Parameters {
 		}
 		$this->set [$column] = $value;
 	}
-
+	
 	/**
 	 * Register the table name
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @param string $table
 	 *        	Fully qualified table
 	 * @throws \Exception
@@ -603,13 +649,13 @@ class Parameters {
 		$this->table = $table;
 		$this->tables [] = $table;
 	}
-
+	
 	/**
 	 * Register an WHERE set
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @see compareList
 	 * @param string $table
 	 *        	Table name which the columns belongs to
@@ -619,7 +665,7 @@ class Parameters {
 	 *        	Comparision action see compareList for more info
 	 * @param string $value
 	 *        	Value to match
-	 *
+	 *        	
 	 * @throws \Exception
 	 */
 	public function registerWhere($table, $column, $comparison, $value) {
@@ -643,7 +689,7 @@ class Parameters {
 		if (! $this->columnExists ( $table, $column )) {
 			throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $table, $column ) );
 		}
-
+		
 		if ($this->where == null) {
 			$this->where = array ();
 		}
@@ -653,16 +699,16 @@ class Parameters {
 				$table,
 				$column,
 				$value != NULL ? $comparison : $comparison === "=",
-				$value
+				$value 
 		);
 	}
-
+	
 	/**
 	 * FunctionDescription
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @param string $column
 	 *        	Column name
 	 * @param array $list
@@ -673,7 +719,7 @@ class Parameters {
 	 *        	Target table, NULL for master table
 	 * @throws \Exception
 	 */
-	public function registerWhereIn($column, $list, $not, $table) {
+	public function registerIn($column, $list, $not, $table) {
 		// Check if function is allowed within current command
 		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
 			throw new \Exception ( "Cannot register WHERE IN with current command: " . $this->command );
@@ -699,16 +745,16 @@ class Parameters {
 				$table,
 				$column,
 				$list,
-				$not
+				$not 
 		);
 	}
-
+	
 	/**
 	 * Verify that a Table exists
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
+	 *        
 	 * @param string $table
 	 *        	Tablename * @param unknown $table
 	 * @return boolean
