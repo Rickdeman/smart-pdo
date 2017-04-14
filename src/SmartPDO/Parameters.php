@@ -330,7 +330,8 @@ class Parameters {
 			$allowed = true;
 		}
 		// Check both: DateTime
-		if ((is_object ( $start ) && is_object ( $stop )) && (get_class ( $start ) == "DateTime" && get_class ( $stop ) == "DateTime")) {
+		if ((is_object ( $start ) && is_object ( $stop )) && (get_class ( 
+				$start ) == "DateTime" && get_class ( $stop ) == "DateTime")) {
 			$allowed = true;
 		}
 		if (is_string ( $start ) && is_string ( $stop )) {

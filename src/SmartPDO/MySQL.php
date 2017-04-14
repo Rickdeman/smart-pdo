@@ -160,7 +160,7 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 			Throw new \Exception ( "Table '$tableName' does not exist" );
 		}
 		// Return mysql table
-		return new \SmartPDO\Mysql\Table ( $this, $tableName );
+		return new \SmartPDO\MySQL\Table ( $this, $tableName );
 	}
 
 	/**

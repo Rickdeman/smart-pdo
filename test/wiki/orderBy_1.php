@@ -10,7 +10,7 @@
  * @var \SmartPDO\MySQL\Table $table
  */
 $table = $MySQL->getTable ( 'customer' )->innerJoin ( 'licences' );
-$table->orderBy ( "ID" )->orderBy ( "licenseID", false, 'licences' );
+$table->orderBy ( "ID" )->orderBy ( "ID", false, 'licences' );
 
 /**
  *
