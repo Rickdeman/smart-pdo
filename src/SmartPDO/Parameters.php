@@ -10,33 +10,103 @@ namespace SmartPDO;
  *
  * @author Rick de Man <rick@rickdeman.nl>
  * @version 1
- *         
+ *
  */
 class Parameters {
-	
+
 	/**
 	 * Placeholder for the columns to be selected, default = array( '*' )
 	 *
 	 * @var array
 	 */
 	private $columns = array (
-			'*' 
+			'*'
 	);
-	
+
 	/**
 	 * Placeholder for the main query statement: SELECT DELETE etc
 	 *
 	 * @var string
 	 */
 	private $command = 'SELECT';
-	
+
+	/**
+	 * Placeholder for all GROUP BY columns
+	 *
+	 * @var array
+	 */
+	private $group = array ();
+
+	/**
+	 * Placeholder for each SET
+	 *
+	 * @var array
+	 */
+	private $insert = null;
+
+	/**
+	 * Placeholder for each JOIN
+	 *
+	 * @var array
+	 */
+	private $joins = null;
+
+	/**
+	 * Placeholder for the LIMIT
+	 *
+	 * @var array
+	 */
+	private $limit = null;
+
 	/**
 	 * Storage for all MySQL tables with columns
 	 *
 	 * @var array
 	 */
 	private $mysqlTables = null;
-	
+
+	/**
+	 * Placeholder for each ORDER
+	 *
+	 * @var array
+	 */
+	private $order = null;
+
+	/**
+	 * Placeholder for the table prefix
+	 *
+	 * @var string
+	 */
+	private $prefix = "";
+
+	/**
+	 * placeholder for each SET key, value
+	 *
+	 * @var array
+	 */
+	private $set = null;
+
+	/**
+	 * Placeholder for the current table
+	 *
+	 * @var string
+	 */
+	private $table = "";
+
+	/**
+	 * Placeholder for all selected table
+	 *
+	 * @var array
+	 */
+	private $tables = array ();
+
+	/**
+	 * Placeholder for all WHERE datasets
+	 *
+	 * @var array
+	 */
+	private $where = null;
+
 	/**
 	 * Available compare methods
 	 *
@@ -50,9 +120,9 @@ class Parameters {
 			">",
 			">=",
 			"<",
-			"<=" 
+			"<="
 	);
-	
+
 	/**
 	 * Available JOIN types
 	 *
@@ -61,90 +131,27 @@ class Parameters {
 	const JoinList = array (
 			"INNER JOIN",
 			"LEFT JOIN",
-			"RIGHT JOIN" 
+			"RIGHT JOIN"
 	);
-	
-	/**
-	 * Placeholder for the LIMIT
-	 *
-	 * @var array
-	 */
-	private $limit = null;
-	
-	/**
-	 * Placeholder for each ORDER
-	 *
-	 * @var array
-	 */
-	private $order = null;
-	
-	/**
-	 * Placeholder for the table prefix
-	 *
-	 * @var string
-	 */
-	private $prefix = "";
-	
-	/**
-	 * Placeholder for each SET
-	 *
-	 * @var array
-	 */
-	private $insert = null;
-	
-	/**
-	 * Placeholder for each JOIN
-	 *
-	 * @var array
-	 */
-	private $joins = null;
-	
-	/**
-	 * placeholder for each SET key, value
-	 *
-	 * @var array
-	 */
-	private $set = null;
-	
-	/**
-	 * Placeholder for the current table
-	 *
-	 * @var string
-	 */
-	private $table = "";
-	
-	/**
-	 * Placeholder for all selected table
-	 *
-	 * @var array
-	 */
-	private $tables = array ();
-	
-	/**
-	 * Placeholder for all WHERE datasets
-	 *
-	 * @var array
-	 */
-	private $where = null;
-	
+
 	/**
 	 * Initialise the Parameter set with the mysql
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
-	 * @param array $tables        	
+	 *
+	 * @param array $tables
 	 */
 	function __Construct(array $tables) {
 		$this->mysqlTables = $tables;
 	}
-	
+
 	/**
 	 * Verify that a Table Column exists
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @param string $table
 	 *        	Tablename
 	 * @param string $column
@@ -158,32 +165,32 @@ class Parameters {
 			return false;
 		}
 	}
-	
+
+	/**
+	 * Get the requested columns to be shown
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return array
+	 */
+	public function getColumns() {
+		return $this->columns;
+	}
+
 	/**
 	 * Get the current query command
 	 *
 	 * @see Parameters::commandList
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @return string
 	 */
 	public function getCommand() {
 		return $this->command;
 	}
-	
-	/**
-	 * Get the requested columns to be shown
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
-	 * @return array
-	 */
-	public function getColumns() {
-		return $this->columns;
-	}
-	
+
 	/**
 	 * Get the INSERT collection
 	 *
@@ -191,13 +198,13 @@ class Parameters {
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @return array
 	 */
 	public function getInsert() {
 		return $this->insert;
 	}
-	
+
 	/**
 	 * Get the JOIN collection
 	 *
@@ -205,13 +212,13 @@ class Parameters {
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @return array
 	 */
 	public function getJoins() {
 		return $this->joins;
 	}
-	
+
 	/**
 	 * Get the LIMIT
 	 *
@@ -219,13 +226,13 @@ class Parameters {
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @return array
 	 */
 	public function getLimit() {
 		return $this->limit;
 	}
-	
+
 	/**
 	 * Get the ORDER collection
 	 *
@@ -233,25 +240,25 @@ class Parameters {
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @return array
 	 */
 	public function getOrder() {
 		return $this->order;
 	}
-	
+
 	/**
 	 * Get the table prefix
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @return array
 	 */
 	public function getPrefix() {
 		return $this->prefix;
 	}
-	
+
 	/**
 	 * Get the SET collection
 	 *
@@ -259,37 +266,37 @@ class Parameters {
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @return array
 	 */
 	public function getSet() {
 		return $this->set;
 	}
-	
+
 	/**
 	 * Get the main table
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @return string
 	 */
 	public function getTable() {
 		return $this->table;
 	}
-	
+
 	/**
 	 * Return all tables which will be used
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @return string
 	 */
 	public function getTables() {
 		return $this->tables;
 	}
-	
+
 	/**
 	 * Get the WHERE collection
 	 *
@@ -297,7 +304,7 @@ class Parameters {
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @return array
 	 */
 	public function getWhere() {
@@ -330,8 +337,7 @@ class Parameters {
 			$allowed = true;
 		}
 		// Check both: DateTime
-		if ((is_object ( $start ) && is_object ( $stop )) && (get_class ( 
-				$start ) == "DateTime" && get_class ( $stop ) == "DateTime")) {
+		if ((is_object ( $start ) && is_object ( $stop )) && (get_class ( $start ) == "DateTime" && get_class ( $stop ) == "DateTime")) {
 			$allowed = true;
 		}
 		if (is_string ( $start ) && is_string ( $stop )) {
@@ -341,7 +347,7 @@ class Parameters {
 		if ($allowed !== true) {
 			throw new \Exception ( "Start and stop values are not equal or not supported" );
 		}
-		
+
 		// Register Where command
 		$this->where [] = array (
 				'BETWEEN',
@@ -349,34 +355,34 @@ class Parameters {
 				$column,
 				$start,
 				$stop,
-				$not 
+				$not
 		);
 	}
-	
+
 	/**
 	 * FunctionDescription
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @param string $columns
 	 *        	Columns to be shown, fully named when using JOIN(s)
 	 */
 	public function registerColumns(...$columns) {
 		$this->columns = $columns;
 	}
-	
+
 	/**
 	 * Register the sql command
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @see Parameters::commandList
 	 *
 	 * @param string $command
 	 *        	The SQL command type
-	 *        	
+	 *
 	 * @throws \Exception
 	 */
 	public function registerCommand($command) {
@@ -391,13 +397,114 @@ class Parameters {
 		// Register Command
 		$this->command = strtoupper ( $command );
 	}
-	
+
+	/**
+	 * Register an GROUP within the WHERE statement with AND/OR
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @param bool $or
+	 *        	True for creating a new group, otherwise left handed will be created
+	 * @throws \Exception
+	 */
+	public function registerGroup($or) {
+		if (! is_bool ( $or )) {
+			throw new \Exception ( "Expected bool, '" . gettype ( $prefix ) . "' provided" );
+		}
+		// Register Where command
+		$this->where [] = array (
+				'GROUP',
+				$or
+		);
+	}
+
+	/**
+	 * Register an GROUP BY
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @param string $column
+	 *        	Fully qualified table column
+	 * @param bool $table
+	 *        	Target table, NULL for master table
+	 * @throws \Exception
+	 */
+	public function registerGroupBy($column, $table) {
+		// Check if function is allowed within current command
+		if ((Config::PDO_GROUPBY & Config::commandList [$this->command]) == 0) {
+			throw new \Exception ( "Cannot register GROUP BY with current command: " . $this->command );
+		}
+		//
+		if (! is_string ( $column )) {
+			throw new \Exception ( "Expected bool, '" . gettype ( $column ) . "' provided" );
+		}
+		// Verify Source columns exists
+		if (! $this->columnExists ( $table, $column )) {
+			throw new \Exception ( sprintf ( "Table column `%s`.`%s` does not exist!", $table, $column ) );
+		}
+		if (! in_array ( $table, $this->tables )) {
+			throw new \Exception ( sprintf ( "Table `%s` is not available at this moment!", $table ) );
+		}
+
+		$this->group [] = array (
+				$table,
+				$column
+		);
+	}
+
+	/**
+	 * FunctionDescription
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @param string $column
+	 *        	Column name
+	 * @param array $list
+	 *        	(multiple) strings for WHERE IN
+	 * @param bool $not
+	 *        	Whether is must be in the list or not
+	 * @param string $table
+	 *        	Target table, NULL for master table
+	 * @throws \Exception
+	 */
+	public function registerIn($column, $list, $not, $table) {
+		// Check if function is allowed within current command
+		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
+			throw new \Exception ( "Cannot register WHERE IN with current command: " . $this->command );
+		}
+		// Validate argument types
+		if (! is_string ( $column )) {
+			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' provided" );
+		}
+		// Verify table exists
+		if (! $this->tableExists ( $table )) {
+			throw new \Exception ( sprintf ( "Table `%s` does not exist!", $table ) );
+		}
+		// Verify columns exists
+		if (! $this->columnExists ( $table, $column )) {
+			throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $table, $column ) );
+		}
+		if ($this->where == null) {
+			$this->where = array ();
+		}
+		// Register Where command
+		$this->where [] = array (
+				'WHEREIN',
+				$table,
+				$column,
+				$list,
+				$not
+		);
+	}
 	/**
 	 * Register an INSERT
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @param string $column
 	 *        	Fully qualified table column
 	 * @param string $value
@@ -418,13 +525,13 @@ class Parameters {
 		// Add set parameters
 		$this->insert [$column] = $value;
 	}
-	
+
 	/**
 	 * Register an JOIN
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @see Parameters::JoinList
 	 * @param string $type
 	 *        	Type of join to be used
@@ -491,17 +598,17 @@ class Parameters {
 				$sourceTable,
 				$sourceColumn,
 				$targetTable,
-				$targetColumn 
+				$targetColumn
 		);
 		$this->tables [] = $targetTable;
 	}
-	
+
 	/**
 	 * Register a LIKE
 	 *
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @version 1
-	 *         
+	 *
 	 * @param unknown $column
 	 *        	Column name
 	 * @param unknown $value
@@ -530,7 +637,7 @@ class Parameters {
 		if (! $this->columnExists ( $table, $column )) {
 			throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $table, $column ) );
 		}
-		
+
 		// Register Where command
 		$this->where [] = array (
 				'LIKE',
@@ -538,16 +645,16 @@ class Parameters {
 				$column,
 				$value,
 				$not,
-				$escape 
+				$escape
 		);
 	}
-	
+
 	/**
 	 * Register the LIMIT
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @param int $start
 	 *        	Start row
 	 * @param int $items
@@ -569,36 +676,16 @@ class Parameters {
 		// Set LIMIT values
 		$this->limit = array (
 				$start,
-				$items 
+				$items
 		);
 	}
-	
-	/**
-	 * Register an OR within the WHERE statement
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
-	 * @param boolean $group        	
-	 * @throws \Exception
-	 */
-	public function registerOr($group) {
-		if (! is_bool ( $group )) {
-			throw new \Exception ( "Expected bool, '" . gettype ( $prefix ) . "' provided" );
-		}
-		// Register Where command
-		$this->where [] = array (
-				'OR',
-				$group 
-		);
-	}
-	
+
 	/**
 	 * Register an ORDER BY
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @param string $column
 	 *        	Fully qualified table column
 	 * @param bool $asc
@@ -626,20 +713,20 @@ class Parameters {
 		if (! in_array ( $table, $this->tables )) {
 			throw new \Exception ( sprintf ( "Table `%s` is not available at this moment!", $table ) );
 		}
-		
+
 		$this->order [] = array (
 				$table,
 				$column,
-				$asc 
+				$asc
 		);
 	}
-	
+
 	/**
 	 * Register the database used prefix
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @param string $prefix
 	 *        	Provide the prefix for the table
 	 * @throws \Exception
@@ -652,13 +739,13 @@ class Parameters {
 		// Register the prefix
 		$this->prefix = $prefix;
 	}
-	
+
 	/**
 	 * Register a SET key value
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @param string $column
 	 *        	table column
 	 * @param string|integer $value
@@ -679,13 +766,13 @@ class Parameters {
 		}
 		$this->set [$column] = $value;
 	}
-	
+
 	/**
 	 * Register the table name
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @param string $table
 	 *        	Fully qualified table
 	 * @throws \Exception
@@ -699,13 +786,13 @@ class Parameters {
 		$this->table = $table;
 		$this->tables [] = $table;
 	}
-	
+
 	/**
 	 * Register an WHERE set
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @see compareList
 	 * @param string $table
 	 *        	Table name which the columns belongs to
@@ -713,12 +800,14 @@ class Parameters {
 	 *        	Fully qualified source table column
 	 * @param string $comparison
 	 *        	Comparision action see compareList for more info
+	 * @param string $condition
+	 *        	AND condition if true, else OR
 	 * @param string $value
 	 *        	Value to match
-	 *        	
+	 *
 	 * @throws \Exception
 	 */
-	public function registerWhere($table, $column, $comparison, $value) {
+	public function registerWhere($table, $column, $comparison, $condition, $value) {
 		// Check if function is allowed within current command
 		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
 			throw new \Exception ( "Cannot register WHERE with current command: " . $this->command );
@@ -739,72 +828,27 @@ class Parameters {
 		if (! $this->columnExists ( $table, $column )) {
 			throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $table, $column ) );
 		}
-		
+
 		if ($this->where == null) {
 			$this->where = array ();
 		}
-		// Register Where command
+		// Register Where command: COMMAND, TABLE, COMPARISION/BOOL(IS NULL), VALUE
 		$this->where [] = array (
 				'WHERE',
 				$table,
 				$column,
 				$value != NULL ? $comparison : $comparison === "=",
-				$value 
+				$value,
+				$condition
 		);
 	}
-	
-	/**
-	 * FunctionDescription
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
-	 * @param string $column
-	 *        	Column name
-	 * @param array $list
-	 *        	(multiple) strings for WHERE IN
-	 * @param bool $not
-	 *        	Whether is must be in the list or not
-	 * @param string $table
-	 *        	Target table, NULL for master table
-	 * @throws \Exception
-	 */
-	public function registerIn($column, $list, $not, $table) {
-		// Check if function is allowed within current command
-		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
-			throw new \Exception ( "Cannot register WHERE IN with current command: " . $this->command );
-		}
-		// Validate argument types
-		if (! is_string ( $column )) {
-			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' provided" );
-		}
-		// Verify table exists
-		if (! $this->tableExists ( $table )) {
-			throw new \Exception ( sprintf ( "Table `%s` does not exist!", $table ) );
-		}
-		// Verify columns exists
-		if (! $this->columnExists ( $table, $column )) {
-			throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $table, $column ) );
-		}
-		if ($this->where == null) {
-			$this->where = array ();
-		}
-		// Register Where command
-		$this->where [] = array (
-				'WHEREIN',
-				$table,
-				$column,
-				$list,
-				$not 
-		);
-	}
-	
+
 	/**
 	 * Verify that a Table exists
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *        
+	 *
 	 * @param string $table
 	 *        	Tablename * @param unknown $table
 	 * @return boolean

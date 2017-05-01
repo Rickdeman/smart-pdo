@@ -23,7 +23,9 @@ Config::$readOnly = true;
  *
  * @var \SmartPDO\MySQL\Table $table
  */
-$table = $MySQL->getTable ( 'customer' )->between ( 'ID', 2, 10 );
+$table = $MySQL->getTable ( 'urbanareas' )->columns ( 'country' )->where ( 'country', 'Yemen' )->whereOr (
+		'country',
+		'Belarus' )->groupBy ( 'country' );
 
 /**
  *
