@@ -13,6 +13,7 @@ namespace SmartPDO;
  *
  */
 class MySQL implements \SmartPDO\Interfaces\Database {
+	private $databaseName;
 
 	/**
 	 * Pdo database handler
@@ -75,7 +76,7 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 
 			// Save prefix
 			$this->prefix = $prefix == "" ? "" : $prefix . "_";
-
+			$this->databaseName = $database;
 			// For each row in the datatable set
 			foreach ( $this->pdo->Query ( $_query )->Fetchall () as $V ) {
 				// Add row
@@ -120,6 +121,18 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 				throw new \Exception ( "Table and/or Column does not exist!" );
 			}
 		}
+	}
+
+	/**
+	 *
+	 * {@inheritdoc}
+	 *
+	 * @see \SmartPDO\Interfaces\Database::getDatabaseName()
+	 *
+	 * @return string
+	 */
+	public function getDatabase() {
+		return $this->databaseName;
 	}
 
 	/**

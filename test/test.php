@@ -23,16 +23,13 @@ Config::$readOnly = true;
  *
  * @var \SmartPDO\MySQL\Table $table
  */
-$table = $MySQL->getTable ( 'urbanareas' )->columns ( 'country' )->where ( 'country', 'Yemen' )->whereOr (
-		'country',
-		'Belarus' )->groupBy ( 'country' );
+$table = $MySQL->getTable ( 'customer' )->andIn ( 'ID', explode ( ",", "1,3" ) );
 
 /**
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */
 $rows = $table->execute ();
-
-echo $rows->rowCount () . " - ";
+echo sprintf ( "%s/%s%s", $rows->rowCount (), $rows->getTotalRows (), PHP_EOL );
 print_r ( $rows->getRows () );
 print_r ( $rows->getQuery () );

@@ -5,6 +5,14 @@
  */
 namespace SmartPDO;
 
+use SmartPDO\Parameters\GroupBy;
+use SmartPDO\Parameters\OrderBy;
+use SmartPDO\Parameters\Between;
+use SmartPDO\Parameters\WhereLogic;
+use SmartPDO\Parameters\Group;
+use SmartPDO\Parameters\Where;
+use SmartPDO\Parameters\WhereIn;
+
 /**
  * Smart PDO Table parameters handler
  *
@@ -33,7 +41,7 @@ class Parameters {
 	/**
 	 * Placeholder for all GROUP BY columns
 	 *
-	 * @var array
+	 * @var GroupBy[]
 	 */
 	private $group = array ();
 
@@ -68,7 +76,7 @@ class Parameters {
 	/**
 	 * Placeholder for each ORDER
 	 *
-	 * @var array
+	 * @var OrderBy[]
 	 */
 	private $order = null;
 
@@ -105,7 +113,7 @@ class Parameters {
 	 *
 	 * @var array
 	 */
-	private $where = null;
+	private $where = array ();
 
 	/**
 	 * Available compare methods
@@ -192,6 +200,18 @@ class Parameters {
 	}
 
 	/**
+	 * Get the GROUP BY collection
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return GroupBy[]
+	 */
+	public function getGroup() {
+		return $this->group;
+	}
+
+	/**
 	 * Get the INSERT collection
 	 *
 	 * arrays markup: column => value
@@ -241,7 +261,7 @@ class Parameters {
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
-	 * @return array
+	 * @return OrderBy[]
 	 */
 	public function getOrder() {
 		return $this->order;
@@ -305,31 +325,45 @@ class Parameters {
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
-	 * @return array
+	 * @return WhereLogic[]
 	 */
 	public function getWhere() {
 		return $this->where;
 	}
-	public function registerBetween($column, $start, $stop, $not, $table) {
+
+	/**
+	 * Register an BETWEEN
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @param string $column
+	 *        	Fully qualified table column
+	 * @param double|int $start
+	 *        	Start value
+	 * @param double|int $stop
+	 *        	Stop value
+	 * @param bool $not
+	 *        	Boolean for IS NOT
+	 * @param bool $table
+	 *        	Target table
+	 * @param bool $and
+	 *        	Is condition prefix with AND or OR
+	 *
+	 * @throws \Exception
+	 */
+	public function registerBetween($column, $start, $stop, $not, $table, $and) {
 		// Check if function is allowed within current command
 		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
 			throw new \Exception ( "Cannot register WHERE with current command: " . $this->command );
 		}
-		// Validate argument types
-		if (! is_string ( $column )) {
-			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' provided" );
-		}
-		// Verify table exists
-		if (! $this->tableExists ( $table )) {
-			throw new \Exception ( sprintf ( "Table `%s` does not exist!", $table ) );
-		}
+		// Check if table & column exist
+		$this->tableColumnCheck ( $table, $column );
 		// Verify table is defined
 		if (! in_array ( $table, $this->tables )) {
-			throw new \Exception ( sprintf ( "Source table `%s` is not available at this moment!", $table ) );
-		}
-		// Verify columns exists
-		if (! $this->columnExists ( $table, $column )) {
-			throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $table, $column ) );
+			$message = "Source table `%s` is not available at this moment!";
+			$message = sprintf ( $message, $table );
+			throw new \Exception ( $message );
 		}
 		$allowed = false;
 		// Check both: double or int
@@ -347,16 +381,8 @@ class Parameters {
 		if ($allowed !== true) {
 			throw new \Exception ( "Start and stop values are not equal or not supported" );
 		}
-
 		// Register Where command
-		$this->where [] = array (
-				'BETWEEN',
-				$table,
-				$column,
-				$start,
-				$stop,
-				$not
-		);
+		$this->where [] = new Between ( $table, $column, $start, $stop, $not, $and );
 	}
 
 	/**
@@ -408,15 +434,12 @@ class Parameters {
 	 *        	True for creating a new group, otherwise left handed will be created
 	 * @throws \Exception
 	 */
-	public function registerGroup($or) {
-		if (! is_bool ( $or )) {
-			throw new \Exception ( "Expected bool, '" . gettype ( $prefix ) . "' provided" );
+	public function registerGroup($and) {
+		if (! is_bool ( $and )) {
+			throw new \Exception ( "Expected bool, '" . gettype ( $and ) . "' provided" );
 		}
 		// Register Where command
-		$this->where [] = array (
-				'GROUP',
-				$or
-		);
+		$this->where [] = new Group ( $and, null );
 	}
 
 	/**
@@ -429,6 +452,7 @@ class Parameters {
 	 *        	Fully qualified table column
 	 * @param bool $table
 	 *        	Target table, NULL for master table
+	 *
 	 * @throws \Exception
 	 */
 	public function registerGroupBy($column, $table) {
@@ -447,11 +471,7 @@ class Parameters {
 		if (! in_array ( $table, $this->tables )) {
 			throw new \Exception ( sprintf ( "Table `%s` is not available at this moment!", $table ) );
 		}
-
-		$this->group [] = array (
-				$table,
-				$column
-		);
+		$this->group [] = new GroupBy ( $table, $column );
 	}
 
 	/**
@@ -468,36 +488,20 @@ class Parameters {
 	 *        	Whether is must be in the list or not
 	 * @param string $table
 	 *        	Target table, NULL for master table
+	 * @param bool $and
+	 *        	Is condition prefix with AND or OR
+	 *
 	 * @throws \Exception
 	 */
-	public function registerIn($column, $list, $not, $table) {
+	public function registerIn($column, $list, $not, $table, $and) {
 		// Check if function is allowed within current command
 		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
 			throw new \Exception ( "Cannot register WHERE IN with current command: " . $this->command );
 		}
-		// Validate argument types
-		if (! is_string ( $column )) {
-			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' provided" );
-		}
-		// Verify table exists
-		if (! $this->tableExists ( $table )) {
-			throw new \Exception ( sprintf ( "Table `%s` does not exist!", $table ) );
-		}
-		// Verify columns exists
-		if (! $this->columnExists ( $table, $column )) {
-			throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $table, $column ) );
-		}
-		if ($this->where == null) {
-			$this->where = array ();
-		}
+		// Check if table & column exist
+		$this->tableColumnCheck ( $table, $column );
 		// Register Where command
-		$this->where [] = array (
-				'WHEREIN',
-				$table,
-				$column,
-				$list,
-				$not
-		);
+		$this->where [] = new WhereIn ( $table, $column, $list, $not, $and );
 	}
 	/**
 	 * Register an INSERT
@@ -554,38 +558,11 @@ class Parameters {
 		if (! in_array ( $type, self::JoinList )) {
 			throw new \Exception ( "JOIN types: '" . $comparison . "' is not allowed. see joinList for more info" );
 		}
-		// Verify Source table is string
-		if (! is_string ( $sourceTable )) {
-			throw new \Exception ( "Expected 'sourceTable' to be string, '" . gettype ( $sourceTable ) . "' provided" );
-		}
-		// Verify Source column is string
-		if (! is_string ( $sourceColumn )) {
-			throw new \Exception ( "Expected 'sourceColumn' to be string, '" . gettype ( $sourceColumn ) . "' provided" );
-		}
-		// Verify Target table is string
-		if (! is_string ( $targetTable )) {
-			throw new \Exception ( "Expected 'targetTable' to be string, '" . gettype ( $targetTable ) . "' provided" );
-		}
-		// Verify Target column is string
-		if (! is_string ( $targetColumn )) {
-			throw new \Exception ( "Expected 'targetColumn' to be string, '" . gettype ( $targetColumn ) . "' provided" );
-		}
-		// Verify Source table exists
-		if (! $this->tableExists ( $sourceTable )) {
-			throw new \Exception ( sprintf ( "Source table `%s` does not exist!", $sourceTable ) );
-		}
-		// Verify Source columns exists
-		if (! $this->columnExists ( $sourceTable, $sourceColumn )) {
-			throw new \Exception ( sprintf ( "Source column `%s`.`%s` does not exist!", $sourceTable, $sourceColumn ) );
-		}
-		// Verify Target table exists
-		if (! $this->tableExists ( $targetTable )) {
-			throw new \Exception ( sprintf ( "Target table `%s` does not exist!", $targetTable ) );
-		}
-		// Verify Source columns exists
-		if (! $this->columnExists ( $targetTable, $targetColumn )) {
-			throw new \Exception ( sprintf ( "Source column `%s`.`%s` does not exist!", $targetTable, $targetColumn ) );
-		}
+		// Check if source table & column exist
+		$this->tableColumnCheck ( $sourceTable, $sourceColumn );
+		// Check if target table & column exist
+		$this->tableColumnCheck ( $targetTable, $targetColumn );
+		// Check if source table is already defined
 		if (! in_array ( $sourceTable, $this->tables )) {
 			throw new \Exception ( sprintf ( "Source table `%s` is not available at this moment!", $targetTable ) );
 		}
@@ -688,13 +665,13 @@ class Parameters {
 	 *
 	 * @param string $column
 	 *        	Fully qualified table column
-	 * @param bool $asc
-	 *        	True for ASC otherwise DESC
+	 * @param bool $ascending
+	 *        	True for acsending else descending
 	 * @param bool $table
 	 *        	Target table, NULL for master table
 	 * @throws \Exception
 	 */
-	public function registerOrderBy($column, $asc, $table) {
+	public function registerOrderBy($column, $ascending, $table) {
 		// Check if function is allowed within current command
 		if ((Config::PDO_ORDERBY & Config::commandList [$this->command]) == 0) {
 			throw new \Exception ( "Cannot register ORDER BY with current command: " . $this->command );
@@ -703,8 +680,8 @@ class Parameters {
 		if (! is_string ( $column )) {
 			throw new \Exception ( "Expected bool, '" . gettype ( $column ) . "' provided" );
 		}
-		if (! is_bool ( $asc )) {
-			throw new \Exception ( "Expected bool, '" . gettype ( $asc ) . "' provided" );
+		if (! is_bool ( $ascending )) {
+			throw new \Exception ( "Expected bool, '" . gettype ( $ascending ) . "' provided" );
 		}
 		// Verify Source columns exists
 		if (! $this->columnExists ( $table, $column )) {
@@ -713,12 +690,7 @@ class Parameters {
 		if (! in_array ( $table, $this->tables )) {
 			throw new \Exception ( sprintf ( "Table `%s` is not available at this moment!", $table ) );
 		}
-
-		$this->order [] = array (
-				$table,
-				$column,
-				$asc
-		);
+		$this->order [] = new OrderBy ( $table, $column, $ascending );
 	}
 
 	/**
@@ -800,47 +772,26 @@ class Parameters {
 	 *        	Fully qualified source table column
 	 * @param string $comparison
 	 *        	Comparision action see compareList for more info
-	 * @param string $condition
-	 *        	AND condition if true, else OR
 	 * @param string $value
 	 *        	Value to match
+	 * @param string $and
+	 *        	AND condition if true, else OR
 	 *
 	 * @throws \Exception
 	 */
-	public function registerWhere($table, $column, $comparison, $condition, $value) {
+	public function registerWhere($table, $column, $comparison, $value, $and) {
 		// Check if function is allowed within current command
 		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
 			throw new \Exception ( "Cannot register WHERE with current command: " . $this->command );
-		}
-		// Validate argument types
-		if (! is_string ( $column )) {
-			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' provided" );
 		}
 		// Validate comparison symbol
 		if (! in_array ( $comparison, self::compareList )) {
 			throw new \Exception ( "provided invalid compare: '" . $comparison . "'. see compareList for more info" );
 		}
-		// Verify table exists
-		if (! $this->tableExists ( $table )) {
-			throw new \Exception ( sprintf ( "Table `%s` does not exist!", $table ) );
-		}
-		// Verify columns exists
-		if (! $this->columnExists ( $table, $column )) {
-			throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $table, $column ) );
-		}
-
-		if ($this->where == null) {
-			$this->where = array ();
-		}
+		// Check if table & column exist
+		$this->tableColumnCheck ( $table, $column );
 		// Register Where command: COMMAND, TABLE, COMPARISION/BOOL(IS NULL), VALUE
-		$this->where [] = array (
-				'WHERE',
-				$table,
-				$column,
-				$value != NULL ? $comparison : $comparison === "=",
-				$value,
-				$condition
-		);
+		$this->where [] = new Where ( $table, $column, $value != NULL ? $comparison : $comparison === "=", $value, $and );
 	}
 
 	/**
@@ -855,5 +806,31 @@ class Parameters {
 	 */
 	public function tableExists($table) {
 		return in_array ( $table, array_keys ( $this->mysqlTables ) );
+	}
+	private function tableColumnCheck($table, $column) {
+		// Verify Source table is string
+		if (! is_string ( $table )) {
+			$message = "Expected 'table' to be string, '%s' provided";
+			$message = sprintf ( $message, gettype ( $table ) );
+			throw new \Exception ( $message );
+		}
+		// Verify Source column is string
+		if (! is_string ( $column )) {
+			$message = "Expected 'column' to be string, '%s' provided";
+			$message = sprintf ( $message, gettype ( $column ) );
+			throw new \Exception ( $message );
+		}
+		// Verify table exists
+		if (! $this->tableExists ( $table )) {
+			$message = "table `%s` does not exist!";
+			$message = sprintf ( $message, $table );
+			throw new \Exception ( $message );
+		}
+		// Verify columns exists
+		if (! $this->columnExists ( $table, $column )) {
+			$message = "column `%s`.`%s` does not exist!";
+			$message = sprintf ( $message, $sourceTable, $column );
+			throw new \Exception ( $message );
+		}
 	}
 }

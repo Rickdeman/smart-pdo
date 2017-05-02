@@ -60,6 +60,16 @@ interface Rows {
 	function getRows();
 
 	/**
+	 * Get the row count of the table column
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return int
+	 */
+	function getTotalRows();
+
+	/**
 	 * Get the amount of rows
 	 *
 	 * @version 1

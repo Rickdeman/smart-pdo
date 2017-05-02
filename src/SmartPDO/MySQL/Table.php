@@ -62,7 +62,7 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::between()
+	 * @see \SmartPDO\Interfaces\Table::andBetween()
 	 *
 	 * @param string $column
 	 *        	table column
@@ -77,9 +77,9 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function between($column, $start, $stop, $not = false, $table = null) {
-		$table = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
-		$this->parameters->registerBetween ( $column, $start, $stop, $not, $table );
+	public function andBetween($column, $start, $stop, $not = false, $table = null) {
+		$tbl = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
+		$this->parameters->registerBetween ( $column, $start, $stop, $not, $tbl, true );
 		return $this;
 	}
 
@@ -132,16 +132,13 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::group()
-	 *
-	 * @param bool $or
-	 *        	True for creating a new group, otherwise left handed will be created
+	 * @see \SmartPDO\Interfaces\Table::andGroup()
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function group($or = true) {
+	public function andGroup() {
 		// Register the OR for the WHERE statement
-		$this->parameters->registerGroup ( $or );
+		$this->parameters->registerGroup ( true );
 		// Return current object
 		return $this;
 	}
@@ -169,7 +166,7 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::whereIn()
+	 * @see \SmartPDO\Interfaces\Table::andIn()
 	 *
 	 * @param string $column
 	 *        	Column name
@@ -182,9 +179,9 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function in($column, $list, $not = false, $table = null) {
+	public function andIn($column, $list, $not = false, $table = null) {
 		$tbl = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
-		$this->parameters->registerIn ( $column, $list, $not, $tbl );
+		$this->parameters->registerIn ( $column, $list, $not, $tbl, true );
 		return $this;
 	}
 
@@ -442,7 +439,7 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::where()
+	 * @see \SmartPDO\Interfaces\Table::andWhere()
 	 *
 	 * @param string $column
 	 *        	Columns name
@@ -455,10 +452,10 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function where($column, $value, $comparison = '=', $table = null) {
+	public function andWhere($column, $value, $comparison = '=', $table = null) {
 		$tableName = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
 		// Register where dataset
-		$this->parameters->registerWhere ( $tableName, $column, $comparison, "AND", $value );
+		$this->parameters->registerWhere ( $tableName, $column, $comparison, $value, true );
 		// Return current object
 		return $this;
 	}
@@ -485,6 +482,69 @@ class Table implements \SmartPDO\Interfaces\Table {
 		// Register where dataset
 		$this->parameters->registerWhere ( $tableName, $column, $comparison, "OR", $value );
 		// Return current object
+		return $this;
+	}
+
+	/**
+	 *
+	 * {@inheritdoc}
+	 *
+	 * @see \SmartPDO\Interfaces\Table::orBetween()
+	 *
+	 * @param string $column
+	 *        	table column
+	 * @param double|int|\DateTime|string $start
+	 *        	Start value
+	 * @param double|int|\DateTime|string $stop
+	 *        	End value
+	 * @param bool $not
+	 *        	Whether is must be in the list or not
+	 * @param string $table
+	 *        	Target table, NULL for root table
+	 *
+	 * @return \SmartPDO\MySQL\Table
+	 */
+	public function orBetween($column, $start, $stop, $not = false, $table = null) {
+		$tbl = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
+		$this->parameters->registerBetween ( $column, $start, $stop, $not, $tbl, false );
+		return $this;
+	}
+
+	/**
+	 *
+	 * {@inheritdoc}
+	 *
+	 * @see \SmartPDO\Interfaces\Table::orGroup()
+	 *
+	 * @return \SmartPDO\MySQL\Table
+	 */
+	public function orGroup() {
+		// Register the OR for the WHERE statement
+		$this->parameters->registerGroup ( false );
+		// Return current object
+		return $this;
+	}
+
+	/**
+	 *
+	 * {@inheritdoc}
+	 *
+	 * @see \SmartPDO\Interfaces\Table::orIn()
+	 *
+	 * @param string $column
+	 *        	Column name
+	 * @param array $list
+	 *        	(multiple) strings for WHERE IN
+	 * @param bool $not
+	 *        	Whether is must be in the list or not
+	 * @param string $table
+	 *        	Target table, NULL for master table
+	 *
+	 * @return \SmartPDO\MySQL\Table
+	 */
+	public function orIn($column, $list, $not = false, $table = null) {
+		$tbl = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
+		$this->parameters->registerIn ( $column, $list, $not, $tbl, false );
 		return $this;
 	}
 }

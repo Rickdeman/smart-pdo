@@ -28,7 +28,7 @@ interface Table {
 	function __Construct(\SmartPDO\Interfaces\Database $db, $table);
 
 	/**
-	 * add BETWEEN
+	 * add (AND) BETWEEN
 	 *
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @version 1
@@ -44,7 +44,7 @@ interface Table {
 	 * @param string $table
 	 *        	Target table, NULL for root table
 	 */
-	public function between($column, $start, $stop, $not = false, $table = null);
+	public function andBetween($column, $start, $stop, $not = false, $table = null);
 
 	/**
 	 * Set columns to be selected
@@ -80,19 +80,17 @@ interface Table {
 	public function execute();
 
 	/**
-	 * Add new group
+	 * Add new AND group
 	 *
 	 * Changed name from 'or' > 'group' due to failure of phpdocs
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
-	 * @param bool $or
-	 *        	True for creating a new group, otherwise left handed will be created
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function group($or = true);
+	public function andGroup();
 
 	/**
 	 * Add GROUP BY
@@ -110,7 +108,7 @@ interface Table {
 	public function groupBy($column, $table = null);
 
 	/**
-	 * Add IN
+	 * Add (AND) IN
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
@@ -126,7 +124,7 @@ interface Table {
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function in($column, $list, $not = false, $table = null);
+	public function andIn($column, $list, $not = false, $table = null);
 
 	/**
 	 * Add INNER JOIN
@@ -297,7 +295,7 @@ interface Table {
 	public function value($column, $value);
 
 	/**
-	 * Add WHERE comparison
+	 * Add (AND) WHERE comparison
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
@@ -313,7 +311,7 @@ interface Table {
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function where($column, $value, $comparison = '=', $table = null);
+	public function andWhere($column, $value, $comparison = '=', $table = null);
 
 	/**
 	 * Add WHERE comparison
@@ -333,4 +331,55 @@ interface Table {
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function whereOr($column, $value, $comparison = '=', $table = null);
+
+	/**
+	 * add (OR) BETWEEN
+	 *
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 * @version 1
+	 *
+	 * @param string $column
+	 *        	table column
+	 * @param double|int|\DateTime|string $start
+	 *        	Start value
+	 * @param double|int|\DateTime|string $stop
+	 *        	End value
+	 * @param bool $not
+	 *        	Whether is must be in the list or not
+	 * @param string $table
+	 *        	Target table, NULL for root table
+	 */
+	public function orBetween($column, $start, $stop, $not = false, $table = null);
+
+	/**
+	 * Add (OR) IN
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @param string $column
+	 *        	Column name
+	 * @param array $list
+	 *        	(multiple) strings for WHERE IN
+	 * @param bool $not
+	 *        	Whether is must be in the list or not
+	 * @param string $table
+	 *        	Target table, NULL for root table
+	 *
+	 * @return \SmartPDO\MySQL\Table
+	 */
+	public function orIn($column, $list, $not = false, $table = null);
+
+	/**
+	 * Add new OR group
+	 *
+	 * Changed name from 'or' > 'group' due to failure of phpdocs
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 *
+	 * @return \SmartPDO\MySQL\Table
+	 */
+	public function orGroup();
 }
