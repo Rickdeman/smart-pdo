@@ -5,6 +5,13 @@
  */
 namespace SmartPDO\Parameters;
 
+/**
+ * Default parameters for a WHERE
+ *
+ * @version 1
+ * @author Rick de Man <rick@rickdeman.nl>
+ *
+ */
 class WhereLogic {
 
 	/**
@@ -22,6 +29,13 @@ class WhereLogic {
 	protected $column;
 
 	/**
+	 * Flag for IS NOT
+	 *
+	 * @var bool
+	 */
+	protected $not = false;
+
+	/**
 	 * Table name
 	 *
 	 * @var string
@@ -36,7 +50,7 @@ class WhereLogic {
 	 *
 	 * @return string
 	 */
-	function getColumn() {
+	public function getColumn() {
 		return $this->column;
 	}
 
@@ -48,7 +62,7 @@ class WhereLogic {
 	 *
 	 * @return string
 	 */
-	function getTable() {
+	public function getTable() {
 		return $this->table;
 	}
 
@@ -60,7 +74,19 @@ class WhereLogic {
 	 *
 	 * @return bool
 	 */
-	function isAnd() {
+	public function isAnd() {
 		return $this->and === true;
+	}
+
+	/**
+	 * Check if condition is inverted: IS NOT
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return bool
+	 */
+	public function isNot() {
+		return $this->not === true;
 	}
 }

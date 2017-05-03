@@ -3,7 +3,7 @@
 /**
  * File: Between.php
  */
-namespace SmartPDO\Parameters;
+namespace SmartPDO\Parameters\Where;
 
 /**
  * SmartPdo Parameter WHERE: BETWEEN
@@ -13,20 +13,6 @@ namespace SmartPDO\Parameters;
  *
  */
 class Between extends \SmartPDO\Parameters\WhereLogic {
-
-	/**
-	 * Flag for ascending or not
-	 *
-	 * @var bool
-	 */
-	private $ascending;
-
-	/**
-	 * Flag for IS NOT
-	 *
-	 * @var bool
-	 */
-	private $not;
 
 	/**
 	 * Start value for BETWEEN
@@ -52,8 +38,12 @@ class Between extends \SmartPDO\Parameters\WhereLogic {
 	 *        	Full table name
 	 * @param string $column
 	 *        	Full column name
-	 * @param bool $ascending
-	 *        	sorting order is ascending or not
+	 * @param double|int|\DateTime $start
+	 *        	Start value
+	 * @param double|int|\DateTime $stop
+	 *        	Stop value
+	 * @param bool $not
+	 *        	Boolean for IS NOT
 	 * @param bool $and
 	 *        	if the AND statement should be used or OR
 	 */
@@ -88,29 +78,5 @@ class Between extends \SmartPDO\Parameters\WhereLogic {
 	 */
 	function getStop() {
 		return $this->stop;
-	}
-
-	/**
-	 * Check if ordering ascending or descending
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @return bool
-	 */
-	function isAscending() {
-		return $this->ascending === true;
-	}
-
-	/**
-	 * Check if condition is inverted: IS NOT
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @return bool
-	 */
-	function isNot() {
-		return $this->not === true;
 	}
 }

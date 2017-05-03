@@ -13,6 +13,12 @@ namespace SmartPDO;
  *
  */
 class MySQL implements \SmartPDO\Interfaces\Database {
+
+	/**
+	 * Name of the current database
+	 *
+	 * @var string
+	 */
 	private $databaseName;
 
 	/**

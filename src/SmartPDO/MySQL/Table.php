@@ -15,11 +15,25 @@ namespace SmartPDO\MySQL;
 class Table implements \SmartPDO\Interfaces\Table {
 
 	/**
+	 * Flag for AND/OR, must be reset after each use!
+	 *
+	 * @var string
+	 */
+	private $and = true;
+
+	/**
 	 * Mysql class
 	 *
 	 * @var \SmartPDO\MySQL
 	 */
 	private $mysql;
+
+	/**
+	 * Number of times a OR should be placed
+	 *
+	 * @var integer
+	 */
+	private $ors = 0;
 
 	/**
 	 * Holds the parameter set for building querys
@@ -62,7 +76,7 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::andBetween()
+	 * @see \SmartPDO\Interfaces\Table::between()
 	 *
 	 * @param string $column
 	 *        	table column
@@ -77,9 +91,16 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function andBetween($column, $start, $stop, $not = false, $table = null) {
+	public function between($column, $start, $stop, $not = false, $table = null) {
+		// Get tablename
 		$tbl = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
-		$this->parameters->registerBetween ( $column, $start, $stop, $not, $tbl, true );
+		// Register dataset WHERE BETWEEN
+		$this->parameters->registerWhereBetween ( $column, $start, $stop, $not, $tbl, $this->ors == 0 );
+		// Decrease OR counter if possible
+		if ($this->ors > 0) {
+			$this->ors --;
+		}
+		// Return current object
 		return $this;
 	}
 
@@ -132,13 +153,15 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::andGroup()
+	 * @see \SmartPDO\Interfaces\Table::group()
 	 *
-	 * @return \SmartPDO\MySQL\Table
+	 * @param bool $and
+	 *        	True for an AND group otherwise OR
 	 */
-	public function andGroup() {
-		// Register the OR for the WHERE statement
-		$this->parameters->registerGroup ( true );
+	public function group($and = false) {
+		$this->parameters->registerGroup ( $and === true );
+		// Set the and according to argument
+		$this->and = $and === true;
 		// Return current object
 		return $this;
 	}
@@ -166,12 +189,12 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::andIn()
+	 * @see \SmartPDO\Interfaces\Table::in()
 	 *
 	 * @param string $column
 	 *        	Column name
 	 * @param array $list
-	 *        	(multiple) strings for WHERE IN
+	 *        	(multiple) strings|numbers for WHERE IN
 	 * @param bool $not
 	 *        	Whether is must be in the list or not
 	 * @param string $table
@@ -179,9 +202,16 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function andIn($column, $list, $not = false, $table = null) {
+	public function in($column, $list, $not = false, $table = null) {
+		// Get tablename
 		$tbl = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
-		$this->parameters->registerIn ( $column, $list, $not, $tbl, true );
+		// Register dataset WHERE IN
+		$this->parameters->registerWhereIn ( $column, $list, $not, $tbl, $this->ors == 0 );
+		// Decrease OR counter if possible
+		if ($this->ors > 0) {
+			$this->ors --;
+		}
+		// Return current object
 		return $this;
 	}
 
@@ -404,6 +434,30 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
+	 * @see \SmartPDO\Interfaces\Table::setOr()
+	 *
+	 * @param number $times
+	 *        	The number of times a OR is requested
+	 *
+	 * @return \SmartPDO\MySQL\Table
+	 */
+	public function setOr($times = 1) {
+		if (! is_int ( $times )) {
+			throw new \Exception ( "Expected int, '" . gettype ( $times ) . "' given." );
+		}
+		if ($times < 1) {
+			throw new \Exception ( "times must be at least 1!" );
+		}
+		// set the counter for OR('s)
+		$this->ors = $times;
+		// Return current object
+		return $this;
+	}
+
+	/**
+	 *
+	 * {@inheritdoc}
+	 *
 	 * @see \SmartPDO\Interfaces\Table::update()
 	 *
 	 * @return \SmartPDO\MySQL\Table
@@ -439,12 +493,12 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::andWhere()
+	 * @see \SmartPDO\Interfaces\Table::where()
 	 *
 	 * @param string $column
 	 *        	Columns name
 	 * @param mixed $value
-	 *        	Value to match, use NULL for 'IS NULL'
+	 *        	Value to compare, use NULL for 'IS NULL'
 	 * @param string $comparison
 	 *        	Comparision action, when value is NULL, use = or !=
 	 * @param string $table
@@ -452,99 +506,16 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
-	public function andWhere($column, $value, $comparison = '=', $table = null) {
-		$tableName = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
-		// Register where dataset
-		$this->parameters->registerWhere ( $tableName, $column, $comparison, $value, true );
-		// Return current object
-		return $this;
-	}
-
-	/**
-	 *
-	 * {@inheritdoc}
-	 *
-	 * @see \SmartPDO\Interfaces\Table::whereOr()
-	 *
-	 * @param string $column
-	 *        	Columns name
-	 * @param mixed $value
-	 *        	Value to match, use NULL for 'IS NULL'
-	 * @param string $comparison
-	 *        	Comparision action, when value is NULL, use = or !=
-	 * @param string $table
-	 *        	Specified table, NULL for master table
-	 *
-	 * @return \SmartPDO\MySQL\Table
-	 */
-	public function whereOr($column, $value, $comparison = '=', $table = null) {
-		$tableName = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
-		// Register where dataset
-		$this->parameters->registerWhere ( $tableName, $column, $comparison, "OR", $value );
-		// Return current object
-		return $this;
-	}
-
-	/**
-	 *
-	 * {@inheritdoc}
-	 *
-	 * @see \SmartPDO\Interfaces\Table::orBetween()
-	 *
-	 * @param string $column
-	 *        	table column
-	 * @param double|int|\DateTime|string $start
-	 *        	Start value
-	 * @param double|int|\DateTime|string $stop
-	 *        	End value
-	 * @param bool $not
-	 *        	Whether is must be in the list or not
-	 * @param string $table
-	 *        	Target table, NULL for root table
-	 *
-	 * @return \SmartPDO\MySQL\Table
-	 */
-	public function orBetween($column, $start, $stop, $not = false, $table = null) {
+	public function where($column, $value, $comparison = '=', $table = null) {
+		// Get tablename
 		$tbl = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
-		$this->parameters->registerBetween ( $column, $start, $stop, $not, $tbl, false );
-		return $this;
-	}
-
-	/**
-	 *
-	 * {@inheritdoc}
-	 *
-	 * @see \SmartPDO\Interfaces\Table::orGroup()
-	 *
-	 * @return \SmartPDO\MySQL\Table
-	 */
-	public function orGroup() {
-		// Register the OR for the WHERE statement
-		$this->parameters->registerGroup ( false );
+		// Register dataset WHERE
+		$this->parameters->registerWhere ( $tbl, $column, $comparison, $value, $this->ors == 0 );
+		// Decrease OR counter if possible
+		if ($this->ors > 0) {
+			$this->ors --;
+		}
 		// Return current object
-		return $this;
-	}
-
-	/**
-	 *
-	 * {@inheritdoc}
-	 *
-	 * @see \SmartPDO\Interfaces\Table::orIn()
-	 *
-	 * @param string $column
-	 *        	Column name
-	 * @param array $list
-	 *        	(multiple) strings for WHERE IN
-	 * @param bool $not
-	 *        	Whether is must be in the list or not
-	 * @param string $table
-	 *        	Target table, NULL for master table
-	 *
-	 * @return \SmartPDO\MySQL\Table
-	 */
-	public function orIn($column, $list, $not = false, $table = null) {
-		$tbl = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
-		$this->parameters->registerIn ( $column, $list, $not, $tbl, false );
 		return $this;
 	}
 }

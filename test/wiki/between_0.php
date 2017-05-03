@@ -7,7 +7,7 @@
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */
-$rows = $MySQL->getTable ( 'customer' )->andBetween ( 'ID', 2, 3 )->orBetween ( 'ID', 1, 2 )->execute ();
+$rows = $MySQL->getTable ( 'customer' )->between ( 'ID', 2, 3 )->setOr ()->between ( 'ID', 1, 2 )->execute ();
 
 echo $rows->rowCount () . " - ";
 print_r ( $rows->getRows () );

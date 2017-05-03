@@ -15,12 +15,15 @@ namespace SmartPDO\Parameters;
 class Where extends \SmartPDO\Parameters\WhereLogic {
 
 	/**
+	 * Comparision action
 	 *
 	 * @var bool|string
 	 */
 	private $comparison;
 
 	/**
+	 *
+	 * Value to compare
 	 *
 	 * @var mixed
 	 */
@@ -36,9 +39,12 @@ class Where extends \SmartPDO\Parameters\WhereLogic {
 	 *        	Full table name
 	 * @param string $column
 	 *        	Full column name
-	 * @param unknown $comparison
-	 * @param unknown $value
-	 * @param unknown $and
+	 * @param string $comparison
+	 *        	Comparision action see compareList for more info
+	 * @param string $value
+	 *        	Value to compare
+	 * @param string $and
+	 *        	AND condition if true, else OR
 	 */
 	function __Construct($table, $column, $comparison, $value, $and) {
 		$this->table = $table;

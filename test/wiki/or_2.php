@@ -14,7 +14,7 @@
 $table = $MySQL->getTable ( 'customer' );
 $table->where ( "ID", 1 )->group ( false )->where ( "ID", 1 )->where ( "ID", 1 );
 $table->group ();
-$table->where ( "ID", 1 )->where ( "ID", 1 )->group ( false )->where ( "ID", 1 )->group ();
+$table->where ( "ID", 1 )->where ( "ID", 1 )->group ( false )->where ( "ID", 1 );
 
 /**
  *

@@ -3,7 +3,7 @@
 /**
  * File: WhereIn.php
  */
-namespace SmartPDO\Parameters;
+namespace SmartPDO\Parameters\Where;
 
 /**
  * SmartPdo Parameter WHERE
@@ -12,20 +12,13 @@ namespace SmartPDO\Parameters;
  * @author Rick de Man <rick@rickdeman.nl>
  *
  */
-class WhereIn extends \SmartPDO\Parameters\WhereLogic {
+class In extends \SmartPDO\Parameters\WhereLogic {
 	/**
 	 * values for IS IN
 	 *
 	 * @var array
 	 */
-	private $list;
-
-	/**
-	 * Flag for IS NOT
-	 *
-	 * @var bool
-	 */
-	private $not;
+	private $values;
 
 	/**
 	 * FunctionDescription
@@ -33,16 +26,21 @@ class WhereIn extends \SmartPDO\Parameters\WhereLogic {
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
-	 * @param unknown $table
-	 * @param unknown $column
-	 * @param unknown $list
-	 * @param unknown $not
-	 * @param unknown $and
+	 * @param string $table
+	 *        	Full table name
+	 * @param string $column
+	 *        	Full column name
+	 * @param array $list
+	 *        	(multiple) strings|numbers for WHERE IN
+	 * @param bool $not
+	 *        	Boolean for IS NOT
+	 * @param bool $and
+	 *        	if the AND statement should be used or OR
 	 */
 	public function __Construct($table, $column, $list, $not, $and) {
 		$this->table = $table;
 		$this->column = $column;
-		$this->list = $list;
+		$this->values = $list;
 		$this->not = $not;
 		$this->and = $and === true;
 	}
@@ -55,19 +53,7 @@ class WhereIn extends \SmartPDO\Parameters\WhereLogic {
 	 *
 	 * @return array
 	 */
-	function getList() {
-		return $this->list;
-	}
-
-	/**
-	 * Check if condition is inverted: IS NOT
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @return bool
-	 */
-	function isNot() {
-		return $this->not === true;
+	function getValues() {
+		return $this->values;
 	}
 }

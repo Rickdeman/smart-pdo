@@ -23,8 +23,11 @@ Config::$readOnly = true;
  *
  * @var \SmartPDO\MySQL\Table $table
  */
-$table = $MySQL->getTable ( 'customer' )->andIn ( 'ID', explode ( ",", "1,3" ) );
-
+$values1 = array (
+		1,
+		'3'
+);
+$table = $MySQL->getTable ( 'customer' )->where ( "ID", 1 )->group ()->where ( "ID", 1 );
 /**
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows

@@ -532,6 +532,7 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		}
 		// Flag for if an OR/ANDn group has been placed
 		$placeLogic = true;
+		$depth = 1;
 		// Loop throuhg all WHERE parameters
 		$parameters = $this->parameters->getWhere ();
 		foreach ( $parameters as $i => $w ) {
@@ -542,7 +543,10 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 					throw new \Exception ( "'" . $w [0] . "' is not configured as Class" );
 				}
 				if ($placeLogic == true) {
-					if (strtolower ( get_class ( $w ) ) != "smartpdo\parameters\group") {
+					$skip = array ();
+					$skip [] = strtolower ( "SmartPDO\Parameters\Group" );
+
+					if (! in_array ( strtolower ( get_class ( $w ) ), $skip )) {
 						$result .= sprintf ( " %s ", $w->isAnd () ? "AND" : "OR" );
 					}
 				} else {
@@ -578,19 +582,28 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 					$message = sprintf ( $message, '\SmartPDO\Parameters\WhereLogic' );
 					throw new \Exception ( $message );
 				}
-
+				/**
+				 *
+				 * @var \SmartPDO\Parameters\WhereLogic $w
+				 */
 				switch (strtolower ( get_class ( $w ) )) {
-					case "smartpdo\parameters\between" :
-						$result .= $this->parseBetween ( $w );
-						break;
 
 					case "smartpdo\parameters\group" :
-						$result .= $this->parseGroup ( $w );
+						$op = $w->isAnd () ? "AND" : "OR";
+						$result .= sprintf ( " ) %s%s%s( ", $op, PHP_EOL, str_repeat ( "\t", $depth ) );
 						$placeLogic = false;
 						break;
 
 					case "smartpdo\parameters\where" :
 						$result .= $this->parseWhere ( $w );
+						break;
+
+					case "smartpdo\parameters\where\between" :
+						$result .= $this->parseWhereBetween ( $w );
+						break;
+
+					case "smartpdo\parameters\where\in" :
+						$result .= $this->parseWhereIn ( $w );
 						break;
 
 					default :
@@ -671,68 +684,13 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 	}
 
 	/**
-	 * Parse WHERE BETWEEN to valid syntax
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @param \SmartPDO\Parameters\Between $between
-	 * @return string
-	 */
-	private function parseBetween(\SmartPDO\Parameters\Between $between) {
-		// Load parameters
-		$table = $between->getTable ();
-		$column = $between->getColumn ();
-		$start = $between->getStart ();
-		$stop = $between->getStop ();
-		$not = $between->isNot ();
-
-		// Check if start/stop is DateTime: Convert
-		if (is_object ( $start ) && get_class ( $start ) == "DateTime") {
-			$start = $start->format ( "Y-m-d H:i:s" );
-			$stop = $stop->format ( "Y-m-d H:i:s" );
-		}
-
-		// Check if multiple tables are used due to JOINS
-		if ($this->multipleTables == true) {
-			// Add table name
-			$result .= sprintf ( "`%s`.", $table );
-		}
-
-		// Add start/stop values
-		$this->values [] = $start;
-		$this->values [] = $stop;
-
-		// Create BETWEEN syntax
-		$string = "`%s` %sBETWEEN ? AND ?";
-		// Return syntax
-		return sprintf ( $string, $column, $not ? 'NOT ' : '' );
-	}
-
-	/**
-	 * Create new group in command
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @param \SmartPDO\Parameters\Group $group
-	 */
-	private function parseGroup(\SmartPDO\Parameters\Group $group) {
-		if ($group->getOpen () == null) {
-			return sprintf ( " ) %s ( ", $group->isAnd () ? "AND" : "OR" );
-		} else {
-			var_dump ( 'OPEN/CLOSE GROUP ' . __FILE__ . ':' . __LINE__ );
-			die ();
-		}
-	}
-
-	/**
 	 * Parse WHERE to valid syntax
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
 	 * @param \SmartPDO\Parameters\Where $where
+	 *
 	 * @return string
 	 */
 	private function parseWhere(\SmartPDO\Parameters\Where $where) {
@@ -761,6 +719,83 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 			// Add value
 			$this->values [] = $where->getValue ();
 		}
+		// Return syntax
+		return $result;
+	}
+
+	/**
+	 * Parse WHERE IN to valid syntax
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @param \SmartPDO\Parameters\Where\In $in
+	 *
+	 * @return string
+	 */
+	private function parseWhereIn(\SmartPDO\Parameters\Where\In $in) {
+		// Load parameters
+		$table = $in->getTable ();
+		$column = $in->getColumn ();
+
+		// Result variable
+		$result = "";
+
+		// Check if multiple tables are used due to JOINS
+		if ($this->multipleTables == true) {
+			// Add table name
+			$result .= sprintf ( "`%s`.", $table );
+		}
+
+		// register values
+		$this->values = array_merge ( $this->values, array_values ( $in->getValues () ) );
+		// Create prepared ? values for query
+		$fill = implode ( ", ", array_fill ( 0, count ( $in->getValues () ), "?" ) );
+		// Finish syntax
+		$result .= sprintf ( "`%s` %sIN (%s)", $column, $in->isNot () ? "NOT " : "", $fill );
+		// Return syntax
+		return $result;
+	}
+
+	/**
+	 * Parse WHERE BETWEEN to valid syntax
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @param \SmartPDO\Parameters\Between $between
+	 *
+	 * @return string
+	 */
+	private function parseWhereBetween(\SmartPDO\Parameters\Where\Between $between) {
+		// Load parameters
+		$table = $between->getTable ();
+		$column = $between->getColumn ();
+		$start = $between->getStart ();
+		$stop = $between->getStop ();
+		$not = $between->isNot ();
+
+		// Result variable
+		$result = "";
+
+		// Check if start/stop is DateTime: Convert
+		if (is_object ( $start ) && get_class ( $start ) == "DateTime") {
+			$start = $start->format ( "Y-m-d H:i:s" );
+			$stop = $stop->format ( "Y-m-d H:i:s" );
+		}
+
+		// Check if multiple tables are used due to JOINS
+		if ($this->multipleTables == true) {
+			// Add table name
+			$result .= sprintf ( "`%s`.", $table );
+		}
+
+		// Add start/stop values
+		$this->values [] = $start;
+		$this->values [] = $stop;
+
+		// Create BETWEEN syntax
+		$result .= sprintf ( "`%s` %sBETWEEN ? AND ?", $column, $not ? 'NOT ' : '' );
 		// Return syntax
 		return $result;
 	}

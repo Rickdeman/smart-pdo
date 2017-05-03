@@ -1,3 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>Bootstrap 101 Template</title>
+		<!-- Bootstrap -->
+		<link href="/bootsdo/assets/components/bootstrap/css/bootstrap.css" rel="stylesheet">
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" type="text/javascript"></script>
+		<script src="/bootsdo/assets/components/bootsdo/js/bootsdo.js" type="text/javascript"></script>
+		<link href="/bootsdo/assets/components/bootsdo/css/bootsdo.css" rel="stylesheet">
+	</head>
+	<body style="padding-top: 120px;">
 <?php
 use SmartPDO\Config;
 
@@ -5,7 +21,6 @@ use SmartPDO\Config;
  * File: wikiMysql.php
  */
 require_once __DIR__ . '/../vendor/autoload.php';
-header ( "Content-Type: text/plain" );
 Config::$readOnly = true;
 /**
  * SmartPDO MySQL handler
@@ -47,3 +62,6 @@ foreach ( $it as $fileinfo ) {
 	echo $output;
 	echo str_replace ( "\n", "\n\t", "\t" . $script ) . PHP_EOL . PHP_EOL;
 }
+?>
+	</body>
+</html>

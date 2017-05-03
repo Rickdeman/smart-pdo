@@ -5,14 +5,6 @@
  */
 namespace SmartPDO;
 
-use SmartPDO\Parameters\GroupBy;
-use SmartPDO\Parameters\OrderBy;
-use SmartPDO\Parameters\Between;
-use SmartPDO\Parameters\WhereLogic;
-use SmartPDO\Parameters\Group;
-use SmartPDO\Parameters\Where;
-use SmartPDO\Parameters\WhereIn;
-
 /**
  * Smart PDO Table parameters handler
  *
@@ -332,57 +324,15 @@ class Parameters {
 	}
 
 	/**
-	 * Register an BETWEEN
+	 * Register an GROUP within the WHERE statement with AND/OR
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
-	 * @param string $column
-	 *        	Fully qualified table column
-	 * @param double|int $start
-	 *        	Start value
-	 * @param double|int $stop
-	 *        	Stop value
-	 * @param bool $not
-	 *        	Boolean for IS NOT
-	 * @param bool $table
-	 *        	Target table
-	 * @param bool $and
-	 *        	Is condition prefix with AND or OR
-	 *
-	 * @throws \Exception
 	 */
-	public function registerBetween($column, $start, $stop, $not, $table, $and) {
-		// Check if function is allowed within current command
-		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
-			throw new \Exception ( "Cannot register WHERE with current command: " . $this->command );
-		}
-		// Check if table & column exist
-		$this->tableColumnCheck ( $table, $column );
-		// Verify table is defined
-		if (! in_array ( $table, $this->tables )) {
-			$message = "Source table `%s` is not available at this moment!";
-			$message = sprintf ( $message, $table );
-			throw new \Exception ( $message );
-		}
-		$allowed = false;
-		// Check both: double or int
-		if ((is_double ( $start ) && is_double ( $stop )) || (is_int ( $start ) && is_int ( $stop ))) {
-			$allowed = true;
-		}
-		// Check both: DateTime
-		if ((is_object ( $start ) && is_object ( $stop )) && (get_class ( $start ) == "DateTime" && get_class ( $stop ) == "DateTime")) {
-			$allowed = true;
-		}
-		if (is_string ( $start ) && is_string ( $stop )) {
-			$allowed = true;
-		}
-		// Start and stop must bo both type of: double | int | DateTime
-		if ($allowed !== true) {
-			throw new \Exception ( "Start and stop values are not equal or not supported" );
-		}
+	public function registerAnd() {
 		// Register Where command
-		$this->where [] = new Between ( $table, $column, $start, $stop, $not, $and );
+		$this->where [] = new \SmartPDO\Parameters\GroupAnd ();
 	}
 
 	/**
@@ -414,7 +364,7 @@ class Parameters {
 	public function registerCommand($command) {
 		// Validate argument types
 		if (! is_string ( $command )) {
-			throw new \Exception ( "Expected string, '" . gettype ( $command ) . "' provided" );
+			throw new \Exception ( "Expected string, '" . gettype ( $command ) . "' given" );
 		}
 		// Check if command is available
 		if (! in_array ( strtoupper ( $command ), array_keys ( Config::commandList ) )) {
@@ -425,21 +375,21 @@ class Parameters {
 	}
 
 	/**
-	 * Register an GROUP within the WHERE statement with AND/OR
+	 * Register a new AND/OR GROUP
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
-	 * @param bool $or
-	 *        	True for creating a new group, otherwise left handed will be created
+	 * @param bool $and
+	 *
 	 * @throws \Exception
 	 */
 	public function registerGroup($and) {
 		if (! is_bool ( $and )) {
-			throw new \Exception ( "Expected bool, '" . gettype ( $and ) . "' provided" );
+			throw new \Exception ( "Expected boolean, '" . gettype ( $and ) . "' given" );
 		}
 		// Register Where command
-		$this->where [] = new Group ( $and, null );
+		$this->where [] = new \SmartPDO\Parameters\Group ( $and === true, null );
 	}
 
 	/**
@@ -474,35 +424,6 @@ class Parameters {
 		$this->group [] = new GroupBy ( $table, $column );
 	}
 
-	/**
-	 * FunctionDescription
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @param string $column
-	 *        	Column name
-	 * @param array $list
-	 *        	(multiple) strings for WHERE IN
-	 * @param bool $not
-	 *        	Whether is must be in the list or not
-	 * @param string $table
-	 *        	Target table, NULL for master table
-	 * @param bool $and
-	 *        	Is condition prefix with AND or OR
-	 *
-	 * @throws \Exception
-	 */
-	public function registerIn($column, $list, $not, $table, $and) {
-		// Check if function is allowed within current command
-		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
-			throw new \Exception ( "Cannot register WHERE IN with current command: " . $this->command );
-		}
-		// Check if table & column exist
-		$this->tableColumnCheck ( $table, $column );
-		// Register Where command
-		$this->where [] = new WhereIn ( $table, $column, $list, $not, $and );
-	}
 	/**
 	 * Register an INSERT
 	 *
@@ -658,6 +579,18 @@ class Parameters {
 	}
 
 	/**
+	 * Register an GROUP within the WHERE statement with AND/OR
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 */
+	public function registerOr() {
+		// Register Where command
+		$this->where [] = new \SmartPDO\Parameters\GroupOr ();
+	}
+
+	/**
 	 * Register an ORDER BY
 	 *
 	 * @version 1
@@ -690,7 +623,7 @@ class Parameters {
 		if (! in_array ( $table, $this->tables )) {
 			throw new \Exception ( sprintf ( "Table `%s` is not available at this moment!", $table ) );
 		}
-		$this->order [] = new OrderBy ( $table, $column, $ascending );
+		$this->order [] = new \SmartPDO\Parameters\OrderBy ( $table, $column, $ascending );
 	}
 
 	/**
@@ -760,7 +693,7 @@ class Parameters {
 	}
 
 	/**
-	 * Register an WHERE set
+	 * Register a new dataset: WHERE
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
@@ -773,7 +706,7 @@ class Parameters {
 	 * @param string $comparison
 	 *        	Comparision action see compareList for more info
 	 * @param string $value
-	 *        	Value to match
+	 *        	Value to compare
 	 * @param string $and
 	 *        	AND condition if true, else OR
 	 *
@@ -791,7 +724,96 @@ class Parameters {
 		// Check if table & column exist
 		$this->tableColumnCheck ( $table, $column );
 		// Register Where command: COMMAND, TABLE, COMPARISION/BOOL(IS NULL), VALUE
-		$this->where [] = new Where ( $table, $column, $value != NULL ? $comparison : $comparison === "=", $value, $and );
+		$this->where [] = new \SmartPDO\Parameters\Where (
+				$table,
+				$column,
+				$value != NULL ? $comparison : $comparison === "=",
+				$value,
+				$and );
+	}
+
+	/**
+	 * Register a new dataset: WHERE BETWEEN
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @param string $column
+	 *        	Fully qualified table column
+	 * @param double|int|\DateTime $start
+	 *        	Start value
+	 * @param double|int|\DateTime $stop
+	 *        	Stop value
+	 * @param bool $not
+	 *        	Boolean for IS NOT
+	 * @param bool $table
+	 *        	Target table
+	 * @param bool $and
+	 *        	Is condition prefix with AND or OR
+	 *
+	 * @throws \Exception
+	 */
+	public function registerWhereBetween($column, $start, $stop, $not, $table, $and) {
+		// Check if function is allowed within current command
+		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
+			throw new \Exception ( "Cannot register WHERE with current command: " . $this->command );
+		}
+		// Check if table & column exist
+		$this->tableColumnCheck ( $table, $column );
+		// Verify table is defined
+		if (! in_array ( $table, $this->tables )) {
+			$message = "Source table `%s` is not available at this moment!";
+			$message = sprintf ( $message, $table );
+			throw new \Exception ( $message );
+		}
+		$allowed = false;
+		// Check both: double or int
+		if ((is_double ( $start ) && is_double ( $stop )) || (is_int ( $start ) && is_int ( $stop ))) {
+			$allowed = true;
+		}
+		// Check both: DateTime
+		if ((is_object ( $start ) && is_object ( $stop )) && (get_class ( $start ) == "DateTime" && get_class ( $stop ) == "DateTime")) {
+			$allowed = true;
+		}
+		if (is_string ( $start ) && is_string ( $stop )) {
+			$allowed = true;
+		}
+		// Start and stop must bo both type of: double | int | DateTime
+		if ($allowed !== true) {
+			throw new \Exception ( "Start and stop values are not equal or not supported" );
+		}
+		// Register Where command
+		$this->where [] = new \SmartPDO\Parameters\Where\Between ( $table, $column, $start, $stop, $not, $and );
+	}
+
+	/**
+	 * Register a new dataset: WHERE IN
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @param string $column
+	 *        	Column name
+	 * @param array $list
+	 *        	(multiple) strings|numbers for WHERE IN
+	 * @param bool $not
+	 *        	Whether is must be in the list or not
+	 * @param string $table
+	 *        	Target table, NULL for master table
+	 * @param bool $and
+	 *        	Is condition prefix with AND or OR
+	 *
+	 * @throws \Exception
+	 */
+	public function registerWhereIn($column, $list, $not, $table, $and) {
+		// Check if function is allowed within current command
+		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
+			throw new \Exception ( "Cannot register WHERE IN with current command: " . $this->command );
+		}
+		// Check if table & column exist
+		$this->tableColumnCheck ( $table, $column );
+		// Register Where command
+		$this->where [] = new \SmartPDO\Parameters\Where\In ( $table, $column, $list, $not, $and );
 	}
 
 	/**

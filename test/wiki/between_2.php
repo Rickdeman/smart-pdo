@@ -7,7 +7,7 @@
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */
-$rows = $MySQL->getTable ( 'customer' )->innerJoin ( 'licences' )->andBetween ( 'ID', 2, 3, 'licences' )->execute ();
+$rows = $MySQL->getTable ( 'customer' )->innerJoin ( 'licences' )->between ( 'ID', 2, 3, 'licences' )->execute ();
 
 echo $rows->rowCount () . " - ";
 print_r ( $rows->getRows () );

@@ -32,7 +32,7 @@ class Group extends \SmartPDO\Parameters\WhereLogic {
 	 * @param bool $open
 	 *        	if boolean is provided, new group will be openened/closed
 	 */
-	function __Construct($and, $open = null) {
+	function __Construct($and, $open) {
 		$this->and = $and === true;
 		$this->open = $open;
 	}
