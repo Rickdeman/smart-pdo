@@ -1,16 +1,10 @@
 <?php
-
+$desc = "ASC or DESC";
 /**
- * orderBy - Example #1
- *
- * When creating an ORDER BY you must specify which colum, and can specify ASC|DESC
- *
- * OrderBY will validate if the provided Column And Table exist
  *
  * @var \SmartPDO\MySQL\Table $table
  */
-$table = $MySQL->getTable ( 'customer' );
-$table->orderBy ( "ID" )->orderBy ( "name", false );
+$table = $MySQL->getTable ( 'customer' )->orderBy ( "ID" )->orderBy ( "name", false );
 
 /**
  *

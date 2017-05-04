@@ -1,16 +1,10 @@
 <?php
-
+$desc = "Fully defined";
 /**
- * innerJoin - Example #1
- *
- * Since addInnerJoin only holds 1 paramter:
- * - @param $targetColumn  = customerID ( %rootTable%ID )
- * - @param $sourceTable   = customer	( %rootTable% )
- * - @param $sourceColumn  = ID
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */
-$rows = $MySQL->getTable ( 'customer' )->innerJoin ( 'licences' )->execute ();
+$rows = $MySQL->getTable ( 'customer' )->innerJoin ( 'licences', 'customerID', 'customer', 'ID' )->execute ();
 
 echo $rows->rowCount () . " - ";
 print_r ( $rows->getRows () );

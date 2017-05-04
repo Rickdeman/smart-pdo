@@ -7,47 +7,45 @@ namespace SmartPDO;
 
 /**
  * Smart MySQL PDO handler
- *
+ * 
  * @author Rick de Man <rick@rickdeman.nl>
  * @version 1
- *
  */
 class MySQL implements \SmartPDO\Interfaces\Database {
 
 	/**
 	 * Name of the current database
-	 *
+	 * 
 	 * @var string
 	 */
 	private $databaseName;
 
 	/**
 	 * Pdo database handler
-	 *
+	 * 
 	 * @var \PDO
 	 */
 	public $pdo;
 
 	/**
 	 * Table prefix string
-	 *
+	 * 
 	 * @var string
 	 */
 	private $prefix = '';
 
 	/**
 	 * Mysql database table list
-	 *
+	 * 
 	 * @var array
 	 */
 	private $tables = array ();
 
 	/**
 	 * SmartPDO MySQL handler
-	 *
+	 * 
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @version 1
-	 *
 	 * @param string $user
 	 *        	Username for logging in to the database
 	 * @param string $pass
@@ -69,7 +67,7 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 			$this->pdo->setAttribute ( \PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC );
 			$this->pdo->setAttribute ( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
 			$this->pdo->Query ( 'USE ' . $database );
-		} catch ( PDOException $e ) {
+		} catch ( \PDOException $e ) {
 			// No connection could be made
 			throw new \Exception ( "SmartPDO was unable to open a connection" );
 		}
@@ -79,7 +77,7 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 			// Show query
 			$_query = "SELECT TABLE_NAME, COLUMN_NAME  from information_schema.columns where table_schema = '" . $database . "' LIMIT 0, 500";
 			// Check for prefix in dsn connection
-
+			
 			// Save prefix
 			$this->prefix = $prefix == "" ? "" : $prefix . "_";
 			$this->databaseName = $database;
@@ -97,7 +95,7 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 					}
 				}
 			}
-		} catch ( Exception $e ) {
+		} catch ( \Exception $e ) {
 			// No connection could be made
 			throw new \Exception ( "SmartPDO was unable to correctly configure itself" );
 		}
@@ -109,9 +107,6 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @see \SmartPDO\Interfaces\Database::columnExists()
-	 *
 	 * @param string $column
 	 *        	The Column to be 'found'
 	 * @param string $table
@@ -122,7 +117,7 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 	public function columnExists($column, $table, $noException = false) {
 		try {
 			return (in_array ( $column, explode ( ",", $this->tables [$table] ) ));
-		} catch ( Exception $e ) {
+		} catch ( \Exception $e ) {
 			if ($noException !== true) {
 				throw new \Exception ( "Table and/or Column does not exist!" );
 			}
@@ -132,8 +127,6 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 	/**
 	 *
 	 * {@inheritdoc}
-	 *
-	 * @see \SmartPDO\Interfaces\Database::getDatabaseName()
 	 *
 	 * @return string
 	 */
@@ -145,11 +138,8 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Database::getPrefix()
-	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @return string
 	 */
 	public function getPrefix() {
@@ -159,8 +149,6 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 	/**
 	 *
 	 * {@inheritdoc}
-	 *
-	 * @see \SmartPDO\Interfaces\Database::getTable()
 	 *
 	 * @param string $tableName
 	 *        	Name of the table within the database
@@ -186,16 +174,12 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Database::getTableColumns()
-	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $tableName
 	 *        	Table of which the columns should be returned
 	 * @throws \Exception
 	 * @return array Array holding all columns from specified table
-	 *
 	 */
 	public function getTableColumns($tableName) {
 		// Check if
@@ -210,11 +194,8 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Database::getTableName()
-	 *
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @version 1
-	 *
 	 * @param string $tableName
 	 *        	Table name without prefix
 	 * @throws \Exception
@@ -238,8 +219,6 @@ class MySQL implements \SmartPDO\Interfaces\Database {
 	/**
 	 *
 	 * {@inheritdoc}
-	 *
-	 * @see \SmartPDO\Interfaces\Database::getTables()
 	 *
 	 * @return array[]
 	 */

@@ -7,19 +7,17 @@ namespace SmartPDO\Interfaces;
 
 /**
  * Interface for all SmartPDO handlers
- *
+ * 
  * @author Rick de Man
  * @version 1
- *
  */
 interface Database {
 
 	/**
 	 * Standard interface for constructing a SmartPDO object
-	 *
+	 * 
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @version 1
-	 *
 	 * @param string $user
 	 *        	Username for logging in to the database
 	 * @param string $pass
@@ -37,10 +35,9 @@ interface Database {
 
 	/**
 	 * Verify a column exists within a table
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $column
 	 *        	The Column to be 'found'
 	 * @param string $table
@@ -53,20 +50,18 @@ interface Database {
 
 	/**
 	 * Get the database which we are working with
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @return string
 	 */
 	public function getDatabase();
 
 	/**
 	 * Get a mysql table
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $tableName
 	 *        	Name of the table within the database
 	 * @throws \Exception
@@ -76,10 +71,9 @@ interface Database {
 
 	/**
 	 * Get all columns of from a table, prefix is not required
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $tableName
 	 *        	Table of which the columns should be returned
 	 */
@@ -87,10 +81,9 @@ interface Database {
 
 	/**
 	 * Get a tablename with the prefix
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $tableName
 	 *        	Table name without prefix
 	 * @throws \Exception
@@ -100,20 +93,18 @@ interface Database {
 
 	/**
 	 * Get all tables with columns
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @return array
 	 */
 	public function getTables();
 
 	/**
 	 * Get the prefix string
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @return string
 	 */
 	public function getPrefix();

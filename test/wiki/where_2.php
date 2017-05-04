@@ -1,10 +1,10 @@
 <?php
-$desc = "Single between";
+$desc = "Single where in join";
 /**
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */
-$rows = $MySQL->getTable ( 'customer' )->between ( 'ID', 2, 3 )->execute ();
+$rows = $MySQL->getTable ( 'customer' )->innerJoin ( 'licences' )->where ( 'ID', 1, '=', 'licences' )->execute ();
 
 echo sprintf ( "%s/%s%s", $rows->rowCount (), $rows->getTotalRows (), PHP_EOL );
 print_r ( $rows->getRows () );

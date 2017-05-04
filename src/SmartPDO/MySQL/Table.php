@@ -7,54 +7,52 @@ namespace SmartPDO\MySQL;
 
 /**
  * MySQL Table handler
- *
+ * 
  * @author Rick de Man <rick@rickdeman.nl>
  * @version 1
- *
  */
 class Table implements \SmartPDO\Interfaces\Table {
 
 	/**
 	 * Flag for AND/OR, must be reset after each use!
-	 *
+	 * 
 	 * @var string
 	 */
 	private $and = true;
 
 	/**
 	 * Mysql class
-	 *
+	 * 
 	 * @var \SmartPDO\MySQL
 	 */
 	private $mysql;
 
 	/**
 	 * Number of times a OR should be placed
-	 *
+	 * 
 	 * @var integer
 	 */
 	private $ors = 0;
 
 	/**
 	 * Holds the parameter set for building querys
-	 *
+	 * 
 	 * @var \SmartPDO\Parameters
 	 */
 	private $parameters;
 
 	/**
 	 * Requestes table name without prefix
-	 *
+	 * 
 	 * @var string
 	 */
 	private $tableName;
 
 	/**
 	 * Contructor for the MySQL Table handler
-	 *
+	 * 
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @version 1
-	 *
 	 * @param \SmartPDO\Interfaces\Database $db
 	 *        	SmartPDO Database Object
 	 * @param string $table
@@ -76,8 +74,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::between()
-	 *
 	 * @param string $column
 	 *        	table column
 	 * @param double|int|\DateTime|string $start
@@ -88,7 +84,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *        	Whether is must be in the list or not
 	 * @param string $table
 	 *        	Target table, NULL for root table
-	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function between($column, $start, $stop, $not = false, $table = null) {
@@ -108,11 +103,8 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::columns()
-	 *
 	 * @param string $columns
 	 *        	Columns to be shown, fully named when using JOIN(s)
-	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function columns(...$columns) {
@@ -125,8 +117,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	/**
 	 *
 	 * {@inheritdoc}
-	 *
-	 * @see \SmartPDO\Interfaces\Table::delete()
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
@@ -141,8 +131,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::execute()
-	 *
 	 * @return \SmartPDO\MySQL\Table\Rows
 	 */
 	public function execute() {
@@ -152,8 +140,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	/**
 	 *
 	 * {@inheritdoc}
-	 *
-	 * @see \SmartPDO\Interfaces\Table::group()
 	 *
 	 * @param bool $and
 	 *        	True for an AND group otherwise OR
@@ -170,13 +156,10 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::groupBy()
-	 *
 	 * @param string $column
 	 *        	Column to be sorted by
 	 * @param string $table
 	 *        	Target table, NULL for root table
-	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function groupBy($column, $table = null) {
@@ -189,8 +172,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::in()
-	 *
 	 * @param string $column
 	 *        	Column name
 	 * @param array $list
@@ -199,7 +180,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *        	Whether is must be in the list or not
 	 * @param string $table
 	 *        	Target table, NULL for master table
-	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function in($column, $list, $not = false, $table = null) {
@@ -219,8 +199,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::innerJoin()
-	 *
 	 * @param string $targetTable
 	 *        	Target table name
 	 * @param string $targetColumn
@@ -229,7 +207,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *        	Source table, NULL for master table
 	 * @param string $sourceColumn
 	 *        	Source table column, null for ID
-	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function innerJoin($targetTable, $targetColumn = null, $sourceTable = null, $sourceColumn = null) {
@@ -237,11 +214,11 @@ class Table implements \SmartPDO\Interfaces\Table {
 		$sourceTable = $this->mysql->getTableName ( $sourceTable != null ? $sourceTable : $this->tableName );
 		$sourceColumn = $sourceColumn != null ? $sourceColumn : "ID";
 		// Insert new INNER JOIN dataset
-		$this->parameters->registerJoin (
-				"INNER JOIN",
-				$this->mysql->getTableName ( $sourceTable ),
-				$sourceColumn,
-				$this->mysql->getTableName ( $targetTable ),
+		$this->parameters->registerJoin ( 
+				"INNER JOIN", 
+				$this->mysql->getTableName ( $sourceTable ), 
+				$sourceColumn, 
+				$this->mysql->getTableName ( $targetTable ), 
 				$targetColumn );
 		// Return current object
 		return $this;
@@ -250,8 +227,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	/**
 	 *
 	 * {@inheritdoc}
-	 *
-	 * @see \SmartPDO\Interfaces\Table::insert()
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
@@ -266,8 +241,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::leftJoin()
-	 *
 	 * @param string $targetTable
 	 *        	Target table name
 	 * @param string $targetColumn
@@ -276,7 +249,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *        	Source table, NULL for master table
 	 * @param string $sourceColumn
 	 *        	Source table column, null for ID
-	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function leftJoin($targetTable, $targetColumn = null, $sourceTable = null, $sourceColumn = null) {
@@ -284,11 +256,11 @@ class Table implements \SmartPDO\Interfaces\Table {
 		$sourceTable = $this->mysql->getTableName ( $sourceTable != null ? $sourceTable : $this->tableName );
 		$sourceColumn = $sourceColumn != null ? $sourceColumn : "ID";
 		// Insert new LEFT JOIN dataset
-		$this->parameters->registerJoin (
-				"LEFT JOIN",
-				$this->mysql->getTableName ( $sourceTable ),
-				$sourceColumn,
-				$this->mysql->getTableName ( $targetTable ),
+		$this->parameters->registerJoin ( 
+				"LEFT JOIN", 
+				$this->mysql->getTableName ( $sourceTable ), 
+				$sourceColumn, 
+				$this->mysql->getTableName ( $targetTable ), 
 				$targetColumn );
 		// Return current object
 		return $this;
@@ -297,8 +269,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	/**
 	 *
 	 * {@inheritdoc}
-	 *
-	 * @see \SmartPDO\Interfaces\Table::like()
 	 *
 	 * @param string $column
 	 *        	Column name
@@ -310,32 +280,18 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *        	Table name, null for root table
 	 * @param string $escape
 	 *        	Escape character, which can be changed
-	 *
 	 * @return \SmartPDO\MySQL\Table
 	 *
 	 */
 	public function like($column, $value, $not = false, $table = null, $escape = "!") {
-		$table = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
-		$this->parameters->registerLike ( $column, $value, $not, $table, $escape );
-		return $this;
-	}
-
-	/**
-	 *
-	 * {@inheritdoc}
-	 *
-	 * @see \SmartPDO\Interfaces\Table::limit()
-	 *
-	 * @param integer $start
-	 *        	The start index
-	 * @param integer $items
-	 *        	The maximum amount of rows to fetch
-	 *
-	 * @return \SmartPDO\MySQL\Table
-	 */
-	public function limit($start, $items) {
-		// Register LIMIT parameters
-		$this->parameters->registerLimit ( $start, $items );
+		// Get tablename
+		$tbl = $this->mysql->getTableName ( $table != null ? $table : $this->tableName );
+		// Register dataset WHERE LIKE
+		$this->parameters->registerWhereLike ( $column, $value, $not, $tbl, $escape, $this->ors == 0 );
+		// Decrease OR counter if possible
+		if ($this->ors > 0) {
+			$this->ors --;
+		}
 		// Return current object
 		return $this;
 	}
@@ -344,7 +300,22 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::orderBy()
+	 * @param integer $items
+	 *        	The maximum amount of rows to fetch
+	 * @param integer $start
+	 *        	The start index
+	 * @return \SmartPDO\MySQL\Table
+	 */
+	public function limit($items, $start = 0) {
+		// Register LIMIT parameters
+		$this->parameters->registerLimit ( $items, $start );
+		// Return current object
+		return $this;
+	}
+
+	/**
+	 *
+	 * {@inheritdoc}
 	 *
 	 * @param string $column
 	 *        	Column to be sorted by
@@ -352,7 +323,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *        	True for ascending, false for descending
 	 * @param string $table
 	 *        	Target table, NULL for master table
-	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function orderBy($column, $asc = true, $table = null) {
@@ -366,8 +336,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::rightJoin()
-	 *
 	 * @param string $targetTable
 	 *        	Target table name
 	 * @param string $targetColumn
@@ -376,7 +344,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *        	Source table, NULL for master table
 	 * @param string $sourceColumn
 	 *        	Source table column, null for ID
-	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function rightJoin($targetTable, $targetColumn = null, $sourceTable = null, $sourceColumn = null) {
@@ -384,11 +351,11 @@ class Table implements \SmartPDO\Interfaces\Table {
 		$sourceTable = $this->mysql->getTableName ( $sourceTable != null ? $sourceTable : $this->tableName );
 		$sourceColumn = $sourceColumn != null ? $sourceColumn : "ID";
 		// Insert new RIGHT JOIN dataset
-		$this->parameters->registerJoin (
-				"RIGHT JOIN",
-				$this->mysql->getTableName ( $sourceTable ),
-				$sourceColumn,
-				$this->mysql->getTableName ( $targetTable ),
+		$this->parameters->registerJoin ( 
+				"RIGHT JOIN", 
+				$this->mysql->getTableName ( $sourceTable ), 
+				$sourceColumn, 
+				$this->mysql->getTableName ( $targetTable ), 
 				$targetColumn );
 		// Return current object
 		return $this;
@@ -397,8 +364,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	/**
 	 *
 	 * {@inheritdoc}
-	 *
-	 * @see \SmartPDO\Interfaces\Table::select()
 	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
@@ -413,13 +378,10 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::set()
-	 *
 	 * @param string $column
 	 *        	table column
 	 * @param string|integer $value
 	 *        	Value to be updated
-	 *
 	 * @throws \Exception
 	 * @return \SmartPDO\MySQL\Table
 	 */
@@ -434,11 +396,8 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::setOr()
-	 *
 	 * @param number $times
 	 *        	The number of times a OR is requested
-	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function setOr($times = 1) {
@@ -458,8 +417,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::update()
-	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function update() {
@@ -473,13 +430,10 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::value()
-	 *
 	 * @param string $column
 	 *        	table column
 	 * @param string|integer $value
 	 *        	Value to be inserted
-	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function value($column, $value) {
@@ -493,8 +447,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
-	 * @see \SmartPDO\Interfaces\Table::where()
-	 *
 	 * @param string $column
 	 *        	Columns name
 	 * @param mixed $value
@@ -503,7 +455,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *        	Comparision action, when value is NULL, use = or !=
 	 * @param string $table
 	 *        	Specified table, NULL for master table
-	 *
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function where($column, $value, $comparison = '=', $table = null) {

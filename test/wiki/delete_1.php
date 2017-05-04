@@ -1,9 +1,6 @@
 <?php
-
+$desc = "Condition";
 /**
- * delete - Example #2
- *
- * Delete rows withing a table with where
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */

@@ -1,9 +1,6 @@
 <?php
-
+$desc = "Delete all";
 /**
- * delete - Example #1
- *
- * Delete rows withing a table, becarefull since it will delete everything!
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */

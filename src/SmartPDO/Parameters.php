@@ -7,140 +7,129 @@ namespace SmartPDO;
 
 /**
  * Smart PDO Table parameters handler
- *
+ * 
  * @author Rick de Man <rick@rickdeman.nl>
  * @version 1
- *
  */
 class Parameters {
 
 	/**
 	 * Placeholder for the columns to be selected, default = array( '*' )
-	 *
-	 * @var array
+	 * 
+	 * @var string[]
 	 */
 	private $columns = array (
-			'*'
+			'*' 
 	);
 
 	/**
 	 * Placeholder for the main query statement: SELECT DELETE etc
-	 *
+	 * 
 	 * @var string
 	 */
 	private $command = 'SELECT';
 
 	/**
+	 * Placeholder for the DISTINCT flag
+	 * 
+	 * @var bool
+	 */
+	private $distinct = false;
+
+	/**
 	 * Placeholder for all GROUP BY columns
-	 *
-	 * @var GroupBy[]
+	 * 
+	 * @var \SmartPDO\Parameters\GroupBy[]
 	 */
 	private $group = array ();
 
 	/**
 	 * Placeholder for each SET
-	 *
+	 * 
 	 * @var array
 	 */
 	private $insert = null;
 
 	/**
 	 * Placeholder for each JOIN
-	 *
-	 * @var array
+	 * 
+	 * @var \SmartPDO\Parameters\Join[]
 	 */
 	private $joins = null;
 
 	/**
 	 * Placeholder for the LIMIT
-	 *
-	 * @var array
+	 * 
+	 * @var \SmartPDO\Parameters\Limit
 	 */
 	private $limit = null;
 
 	/**
 	 * Storage for all MySQL tables with columns
-	 *
+	 * 
 	 * @var array
 	 */
 	private $mysqlTables = null;
 
 	/**
 	 * Placeholder for each ORDER
-	 *
-	 * @var OrderBy[]
+	 * 
+	 * @var \SmartPDO\Parameters\OrderBy[]
 	 */
 	private $order = null;
 
 	/**
 	 * Placeholder for the table prefix
-	 *
+	 * 
 	 * @var string
 	 */
 	private $prefix = "";
 
 	/**
 	 * placeholder for each SET key, value
-	 *
+	 * 
 	 * @var array
 	 */
 	private $set = null;
 
 	/**
 	 * Placeholder for the current table
-	 *
+	 * 
 	 * @var string
 	 */
 	private $table = "";
 
 	/**
 	 * Placeholder for all selected table
-	 *
+	 * 
 	 * @var array
 	 */
 	private $tables = array ();
 
 	/**
 	 * Placeholder for all WHERE datasets
-	 *
+	 * 
 	 * @var array
 	 */
 	private $where = array ();
-
-	/**
-	 * Available compare methods
-	 *
-	 * @var array
-	 */
-	const compareList = array (
-			"=",
-			"<=>",
-			"<>",
-			"!=",
-			">",
-			">=",
-			"<",
-			"<="
-	);
-
+	
 	/**
 	 * Available JOIN types
-	 *
+	 * 
 	 * @var array
 	 */
 	const JoinList = array (
 			"INNER JOIN",
 			"LEFT JOIN",
-			"RIGHT JOIN"
+			"RIGHT JOIN" 
 	);
 
 	/**
 	 * Initialise the Parameter set with the mysql
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @param array $tables
+	 * @param array $tables        	
 	 */
 	function __Construct(array $tables) {
 		$this->mysqlTables = $tables;
@@ -148,10 +137,9 @@ class Parameters {
 
 	/**
 	 * Verify that a Table Column exists
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $table
 	 *        	Tablename
 	 * @param string $column
@@ -161,18 +149,17 @@ class Parameters {
 	public function columnExists($table, $column) {
 		try {
 			return (in_array ( $column, explode ( ',', $this->mysqlTables [$table] ) ));
-		} catch ( Exception $e ) {
+		} catch ( \Exception $e ) {
 			return false;
 		}
 	}
 
 	/**
 	 * Get the requested columns to be shown
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getColumns() {
 		return $this->columns;
@@ -180,11 +167,10 @@ class Parameters {
 
 	/**
 	 * Get the current query command
-	 *
-	 * @see Parameters::commandList
+	 * 
+	 * @see array \SmartPDO\Config::commandList
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @return string
 	 */
 	public function getCommand() {
@@ -193,11 +179,10 @@ class Parameters {
 
 	/**
 	 * Get the GROUP BY collection
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @return GroupBy[]
+	 * @return \SmartPDO\Parameters\GroupBy[]
 	 */
 	public function getGroup() {
 		return $this->group;
@@ -205,12 +190,9 @@ class Parameters {
 
 	/**
 	 * Get the INSERT collection
-	 *
-	 * arrays markup: column => value
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @return array
 	 */
 	public function getInsert() {
@@ -219,13 +201,10 @@ class Parameters {
 
 	/**
 	 * Get the JOIN collection
-	 *
-	 * arrays markup: [ sourceTable, sourceColumn, targetTable, targetColumn ]
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @return array
+	 * @return \SmartPDO\Parameters\Join[]
 	 */
 	public function getJoins() {
 		return $this->joins;
@@ -233,13 +212,10 @@ class Parameters {
 
 	/**
 	 * Get the LIMIT
-	 *
-	 * array markup: [ start, count ]
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @return array
+	 * @return \SmartPDO\Parameters\Limit
 	 */
 	public function getLimit() {
 		return $this->limit;
@@ -247,13 +223,11 @@ class Parameters {
 
 	/**
 	 * Get the ORDER collection
-	 *
 	 * array markup: Column => ASC|DESC
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @return OrderBy[]
+	 * @return \SmartPDO\Parameters\OrderBy[]
 	 */
 	public function getOrder() {
 		return $this->order;
@@ -261,10 +235,9 @@ class Parameters {
 
 	/**
 	 * Get the table prefix
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @return array
 	 */
 	public function getPrefix() {
@@ -273,12 +246,10 @@ class Parameters {
 
 	/**
 	 * Get the SET collection
-	 *
 	 * arrays markup: column => value
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @return array
 	 */
 	public function getSet() {
@@ -287,10 +258,9 @@ class Parameters {
 
 	/**
 	 * Get the main table
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @return string
 	 */
 	public function getTable() {
@@ -299,11 +269,10 @@ class Parameters {
 
 	/**
 	 * Return all tables which will be used
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @return string
+	 * @return string[]
 	 */
 	public function getTables() {
 		return $this->tables;
@@ -311,36 +280,20 @@ class Parameters {
 
 	/**
 	 * Get the WHERE collection
-	 *
-	 * arrays markup: [ column, comparison, value, operator ]
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @return WhereLogic[]
+	 * @return \SmartPDO\Parameters\WhereLogic[]
 	 */
 	public function getWhere() {
 		return $this->where;
 	}
 
 	/**
-	 * Register an GROUP within the WHERE statement with AND/OR
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 */
-	public function registerAnd() {
-		// Register Where command
-		$this->where [] = new \SmartPDO\Parameters\GroupAnd ();
-	}
-
-	/**
 	 * FunctionDescription
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $columns
 	 *        	Columns to be shown, fully named when using JOIN(s)
 	 */
@@ -350,15 +303,12 @@ class Parameters {
 
 	/**
 	 * Register the sql command
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @see Parameters::commandList
-	 *
+	 * @see array \SmartPDO\Config::commandList
 	 * @param string $command
 	 *        	The SQL command type
-	 *
 	 * @throws \Exception
 	 */
 	public function registerCommand($command) {
@@ -376,11 +326,10 @@ class Parameters {
 
 	/**
 	 * Register a new AND/OR GROUP
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @param bool $and
+	 * @param bool $and        	
 	 *
 	 * @throws \Exception
 	 */
@@ -394,15 +343,13 @@ class Parameters {
 
 	/**
 	 * Register an GROUP BY
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $column
 	 *        	Fully qualified table column
 	 * @param bool $table
 	 *        	Target table, NULL for master table
-	 *
 	 * @throws \Exception
 	 */
 	public function registerGroupBy($column, $table) {
@@ -412,7 +359,7 @@ class Parameters {
 		}
 		//
 		if (! is_string ( $column )) {
-			throw new \Exception ( "Expected bool, '" . gettype ( $column ) . "' provided" );
+			throw new \Exception ( "Expected bool, '" . gettype ( $column ) . "' given" );
 		}
 		// Verify Source columns exists
 		if (! $this->columnExists ( $table, $column )) {
@@ -421,15 +368,14 @@ class Parameters {
 		if (! in_array ( $table, $this->tables )) {
 			throw new \Exception ( sprintf ( "Table `%s` is not available at this moment!", $table ) );
 		}
-		$this->group [] = new GroupBy ( $table, $column );
+		$this->group [] = new \SmartPDO\Parameters\GroupBy ( $table, $column );
 	}
 
 	/**
 	 * Register an INSERT
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $column
 	 *        	Fully qualified table column
 	 * @param string $value
@@ -442,7 +388,7 @@ class Parameters {
 		}
 		// Validate argument types
 		if (! is_string ( $column )) {
-			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' provided" );
+			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' given" );
 		}
 		if (! is_array ( $this->insert )) {
 			$this->insert = array ();
@@ -453,11 +399,10 @@ class Parameters {
 
 	/**
 	 * Register an JOIN
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @see Parameters::JoinList
+	 * @see array \SmartPDO\Parameters::JoinList
 	 * @param string $type
 	 *        	Type of join to be used
 	 * @param string $sourceTable
@@ -491,111 +436,49 @@ class Parameters {
 			$this->joins = array ();
 		}
 		// Register INNER JOIN
-		$this->joins [] = array (
-				$type,
-				$sourceTable,
-				$sourceColumn,
-				$targetTable,
-				$targetColumn
-		);
+		$this->joins [] = new \SmartPDO\Parameters\Join ( $type, $sourceTable, $sourceColumn, $targetTable, $targetColumn );
 		$this->tables [] = $targetTable;
 	}
 
 	/**
-	 * Register a LIKE
-	 *
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 * @version 1
-	 *
-	 * @param unknown $column
-	 *        	Column name
-	 * @param unknown $value
-	 *        	Value to be compared
-	 * @param string $not
-	 *        	if true will change to LIKE NOT
-	 * @param unknown $table
-	 *        	Table name, null for root table
-	 * @param string $escape
-	 *        	Escape character, which can be changed
-	 */
-	public function registerLike($column, $value, $not, $table, $escape) {
-		// Check if function is allowed within current command
-		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
-			throw new \Exception ( "Cannot register WHERE with current command: " . $this->command );
-		}
-		// Validate argument types
-		if (! is_string ( $column )) {
-			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' provided" );
-		}
-		// Verify table exists
-		if (! $this->tableExists ( $table )) {
-			throw new \Exception ( sprintf ( "Table `%s` does not exist!", $table ) );
-		}
-		// Verify columns exists
-		if (! $this->columnExists ( $table, $column )) {
-			throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $table, $column ) );
-		}
-
-		// Register Where command
-		$this->where [] = array (
-				'LIKE',
-				$table,
-				$column,
-				$value,
-				$not,
-				$escape
-		);
-	}
-
-	/**
 	 * Register the LIMIT
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @param int $start
-	 *        	Start row
 	 * @param int $items
 	 *        	Number of rows the fetch
+	 * @param int $start
+	 *        	Start row
 	 * @throws \Exception
 	 */
-	public function registerLimit($start, $items) {
+	public function registerLimit($items, $start) {
 		// Check if function is allowed within current command
 		if ((Config::PDO_LIMIT & Config::commandList [$this->command]) == 0) {
 			throw new \Exception ( "Cannot register LIMIT with current command: " . $this->command );
 		}
+		if (! is_int ( $items )) {
+			throw new \Exception ( "Expected integer, '" . gettype ( $items ) . "' given" );
+		}
 		// Validate argument types
 		if (! is_int ( $start )) {
-			throw new \Exception ( "Expected integer, '" . gettype ( $start ) . "' provided" );
+			throw new \Exception ( "Expected integer, '" . gettype ( $start ) . "' given" );
 		}
-		if (! is_int ( $items )) {
-			throw new \Exception ( "Expected integer, '" . gettype ( $items ) . "' provided" );
+		
+		if (! ($items >= 0)) {
+			throw new \Exception ( "items value must positive!" );
+		}
+		if (! ($start >= 0)) {
+			throw new \Exception ( "Start value must positive!" );
 		}
 		// Set LIMIT values
-		$this->limit = array (
-				$start,
-				$items
-		);
-	}
-
-	/**
-	 * Register an GROUP within the WHERE statement with AND/OR
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 */
-	public function registerOr() {
-		// Register Where command
-		$this->where [] = new \SmartPDO\Parameters\GroupOr ();
+		$this->limit = new \SmartPDO\Parameters\Limit ( $items, $start );
 	}
 
 	/**
 	 * Register an ORDER BY
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $column
 	 *        	Fully qualified table column
 	 * @param bool $ascending
@@ -611,10 +494,10 @@ class Parameters {
 		}
 		//
 		if (! is_string ( $column )) {
-			throw new \Exception ( "Expected bool, '" . gettype ( $column ) . "' provided" );
+			throw new \Exception ( "Expected bool, '" . gettype ( $column ) . "' given" );
 		}
 		if (! is_bool ( $ascending )) {
-			throw new \Exception ( "Expected bool, '" . gettype ( $ascending ) . "' provided" );
+			throw new \Exception ( "Expected bool, '" . gettype ( $ascending ) . "' given" );
 		}
 		// Verify Source columns exists
 		if (! $this->columnExists ( $table, $column )) {
@@ -628,10 +511,9 @@ class Parameters {
 
 	/**
 	 * Register the database used prefix
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $prefix
 	 *        	Provide the prefix for the table
 	 * @throws \Exception
@@ -639,7 +521,7 @@ class Parameters {
 	public function registerPrefix($prefix) {
 		// Validate argument types
 		if (! is_string ( $prefix )) {
-			throw new \Exception ( "Expected string, '" . gettype ( $prefix ) . "' provided" );
+			throw new \Exception ( "Expected string, '" . gettype ( $prefix ) . "' given" );
 		}
 		// Register the prefix
 		$this->prefix = $prefix;
@@ -647,10 +529,9 @@ class Parameters {
 
 	/**
 	 * Register a SET key value
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $column
 	 *        	table column
 	 * @param string|integer $value
@@ -664,7 +545,7 @@ class Parameters {
 		}
 		// Validate column is a string
 		if (! is_string ( $column )) {
-			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' provided" );
+			throw new \Exception ( "Expected string, '" . gettype ( $column ) . "' given" );
 		}
 		if (! is_array ( $this->set )) {
 			$this->set = array ();
@@ -674,10 +555,9 @@ class Parameters {
 
 	/**
 	 * Register the table name
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $table
 	 *        	Fully qualified table
 	 * @throws \Exception
@@ -685,7 +565,7 @@ class Parameters {
 	public function registerTable($table) {
 		// Validate argument types
 		if (! is_string ( $table )) {
-			throw new \Exception ( "Expected string, '" . gettype ( $table ) . "' provided" );
+			throw new \Exception ( "Expected string, '" . gettype ( $table ) . "' given" );
 		}
 		// Register table name
 		$this->table = $table;
@@ -694,11 +574,10 @@ class Parameters {
 
 	/**
 	 * Register a new dataset: WHERE
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @see compareList
+	 * @see array \SmartPDO\Config::compareList
 	 * @param string $table
 	 *        	Table name which the columns belongs to
 	 * @param string $column
@@ -709,7 +588,6 @@ class Parameters {
 	 *        	Value to compare
 	 * @param string $and
 	 *        	AND condition if true, else OR
-	 *
 	 * @throws \Exception
 	 */
 	public function registerWhere($table, $column, $comparison, $value, $and) {
@@ -718,26 +596,22 @@ class Parameters {
 			throw new \Exception ( "Cannot register WHERE with current command: " . $this->command );
 		}
 		// Validate comparison symbol
-		if (! in_array ( $comparison, self::compareList )) {
+		if (! in_array ( $comparison, \SmartPDO\Config::compareList )) {
 			throw new \Exception ( "provided invalid compare: '" . $comparison . "'. see compareList for more info" );
 		}
 		// Check if table & column exist
 		$this->tableColumnCheck ( $table, $column );
+		// if value = NULL > bool else comparison operator
+		$comp = $value != NULL ? $comparison : $comparison === "=";
 		// Register Where command: COMMAND, TABLE, COMPARISION/BOOL(IS NULL), VALUE
-		$this->where [] = new \SmartPDO\Parameters\Where (
-				$table,
-				$column,
-				$value != NULL ? $comparison : $comparison === "=",
-				$value,
-				$and );
+		$this->where [] = new \SmartPDO\Parameters\Where ( $table, $column, $comp, $value, $and );
 	}
 
 	/**
 	 * Register a new dataset: WHERE BETWEEN
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $column
 	 *        	Fully qualified table column
 	 * @param double|int|\DateTime $start
@@ -750,7 +624,6 @@ class Parameters {
 	 *        	Target table
 	 * @param bool $and
 	 *        	Is condition prefix with AND or OR
-	 *
 	 * @throws \Exception
 	 */
 	public function registerWhereBetween($column, $start, $stop, $not, $table, $and) {
@@ -788,10 +661,9 @@ class Parameters {
 
 	/**
 	 * Register a new dataset: WHERE IN
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $column
 	 *        	Column name
 	 * @param array $list
@@ -802,7 +674,6 @@ class Parameters {
 	 *        	Target table, NULL for master table
 	 * @param bool $and
 	 *        	Is condition prefix with AND or OR
-	 *
 	 * @throws \Exception
 	 */
 	public function registerWhereIn($column, $list, $not, $table, $and) {
@@ -817,28 +688,74 @@ class Parameters {
 	}
 
 	/**
+	 * Register a LIKE
+	 * 
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 * @version 1
+	 * @param string $column
+	 *        	Fully qualified table column
+	 * @param mixed $value
+	 *        	Value to be compared
+	 * @param string $not
+	 *        	if true will change to LIKE NOT
+	 * @param bool $table
+	 *        	Target table, NULL for master table
+	 * @param string $escape
+	 *        	Escape character, which can be changed
+	 * @param bool $and
+	 *        	Is condition prefix with AND or OR
+	 */
+	public function registerWhereLike($column, $value, $not, $table, $escape, $and) {
+		// Check if function is allowed within current command
+		if ((Config::PDO_WHERE & Config::commandList [$this->command]) == 0) {
+			throw new \Exception ( "Cannot register WHERE with current command: " . $this->command );
+		}
+		// Validate comparison symbol
+		if (! is_bool ( $not )) {
+			$message = "Expected 'not' to be boolean, '%s' given";
+			$message = sprintf ( $message, gettype ( $table ) );
+			throw new \Exception ( $message );
+		}
+		// Check if table & column exist
+		$this->tableColumnCheck ( $table, $column );
+		// Register Where command
+		$this->where [] = new \SmartPDO\Parameters\Where\Like ( $table, $column, $value, $not, $escape, $and );
+	}
+
+	/**
 	 * Verify that a Table exists
-	 *
+	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $table
-	 *        	Tablename * @param unknown $table
+	 *        	Tablename
 	 * @return boolean
 	 */
 	public function tableExists($table) {
 		return in_array ( $table, array_keys ( $this->mysqlTables ) );
 	}
+
+	/**
+	 * Check if a table exists with its columns
+	 * 
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 * @version 1
+	 * @param string $table
+	 *        	Table name
+	 * @param string $column
+	 *        	Column name
+	 * @throws \Exception
+	 */
 	private function tableColumnCheck($table, $column) {
 		// Verify Source table is string
 		if (! is_string ( $table )) {
-			$message = "Expected 'table' to be string, '%s' provided";
+			$message = "Expected 'table' to be string, '%s' given";
 			$message = sprintf ( $message, gettype ( $table ) );
 			throw new \Exception ( $message );
 		}
 		// Verify Source column is string
 		if (! is_string ( $column )) {
-			$message = "Expected 'column' to be string, '%s' provided";
+			$message = "Expected 'column' to be string, '%s' given";
 			$message = sprintf ( $message, gettype ( $column ) );
 			throw new \Exception ( $message );
 		}

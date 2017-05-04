@@ -1,13 +1,10 @@
 <?php
-
+$desc = "Auto Fill";
 /**
- * innerJoin - Example #3
- *
- * addInnerJoin parameters are all defined
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */
-$rows = $MySQL->getTable ( 'customer' )->innerJoin ( 'licences', 'customerID', 'customer', 'ID' )->execute ();
+$rows = $MySQL->getTable ( 'customer' )->innerJoin ( 'licences' )->execute ();
 
 echo $rows->rowCount () . " - ";
 print_r ( $rows->getRows () );
