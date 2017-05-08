@@ -1,5 +1,5 @@
 <?php
-
+$desc = "multiple values";
 /**
  * insert - Example #1
  *

@@ -1,5 +1,5 @@
 <?php
-$desc = "Single Column";
+$desc = "Single Column Distinct";
 /**
  * columns - Example #1
  *
@@ -7,7 +7,7 @@ $desc = "Single Column";
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */
-$rows = $MySQL->getTable ( 'customer' )->columns ( "name" )->execute ();
+$rows = $MySQL->getTable ( 'customer' )->distinct ()->columns ( "category" )->execute ();
 
 echo $rows->rowCount () . " - ";
 print_r ( $rows->getRows () );

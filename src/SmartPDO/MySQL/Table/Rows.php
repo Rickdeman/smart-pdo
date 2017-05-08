@@ -9,7 +9,7 @@ use SmartPDO\Config;
 
 /**
  * MySQL Row collector
- * 
+ *
  * @version 1
  * @author Rick de Man <rick@rickdeman.nl>
  */
@@ -17,88 +17,88 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 
 	/**
 	 * Flag for available columns which are used
-	 * 
+	 *
 	 * @var array
 	 */
 	private $columns;
 
 	/**
 	 * flag for the inserted ID when available
-	 * 
+	 *
 	 * @var int|string
 	 */
 	private $insertedID;
 
 	/**
 	 * Is there more than one table used
-	 * 
+	 *
 	 * @var bool
 	 */
 	private $multipleTables = false;
 
 	/**
 	 * Mysql class
-	 * 
+	 *
 	 * @var \SmartPDO\MySQL
 	 */
 	private $mysql;
 
 	/**
 	 * Sql query paramaters
-	 * 
+	 *
 	 * @var \SmartPDO\Parameters
 	 */
 	private $parameters;
 
 	/**
 	 * Counter for query executions
-	 * 
+	 *
 	 * @var integer
 	 */
 	private static $queryCounter = 0;
 
 	/**
 	 * Rowcount from the query
-	 * 
+	 *
 	 * @var int
 	 */
 	private $rowCount;
 
 	/**
 	 * Rows from the database
-	 * 
+	 *
 	 * @var array
 	 */
 	private $rows;
 
 	/**
 	 * Pdo statement
-	 * 
+	 *
 	 * @var \PDOStatement
 	 */
 	private $sth;
 
 	/**
 	 * Rowcount from the database
-	 * 
+	 *
 	 * @var int
 	 */
 	private $tableRows = 0;
 
 	/**
 	 * Prepared values for statement
-	 * 
+	 *
 	 * @var array
 	 */
 	private $values = array ();
 
 	/**
 	 * MySQL execution and Row Handling
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 * @param \SmartPDO\Interfaces\Database $db        	
-	 * @param \SmartPDO\Parameters $parameters        	
+	 * @param \SmartPDO\Interfaces\Database $db
+	 * @param \SmartPDO\Parameters $parameters
 	 *
 	 * @throws \Exception
 	 */
@@ -130,7 +130,7 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 			case "UPDATE" :
 			case "DELETE" :
 				break;
-			
+
 			default :
 				var_dump ( $query );
 				throw new \Exception ( "Command '" . $this->parameters->getCommand () . "' not yet implemented!" );
@@ -161,21 +161,21 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 			echo $query . PHP_EOL;
 			throw new \Exception ( $ex->getMessage () );
 		}
-		
+
 		if (get_class ( $db ) == "SmartPDO\MySQL") {
 			try {
 				$query = "";
 				$query .= 'SELECT `TABLE_ROWS`' . PHP_EOL;
 				$query .= '	FROM `INFORMATION_SCHEMA`.`TABLES`' . PHP_EOL;
 				$query .= '	WHERE `TABLE_SCHEMA` = ? AND TABLE_NAME = ?';
-				
+
 				$values = array (
 						$this->mysql->getDatabase (),
-						$this->parameters->getTable () 
+						$this->parameters->getTable ()
 				);
 				$sth = $this->mysql->pdo->prepare ( $query );
 				$sth->execute ( $values );
-				
+
 				$this->tableRows = intval ( $sth->fetch () ['TABLE_ROWS'] );
 			} catch ( \Exception $ex ) {
 				// Something when wrong...
@@ -189,7 +189,7 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 
 	/**
 	 * Creates the DELETE part in the Query
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return string
@@ -205,7 +205,7 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 
 	/**
 	 * Creates the INSERT part in the Query
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return string
@@ -227,13 +227,12 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		// Add all values for the prepared statement
 		$this->values = array_merge ( $this->values, array_values ( $this->parameters->getInsert () ) );
 		// Return result
-		return sprintf ( 
-				"INSERT INTO `%s` (`%s`) VALUES (%s)", 
-				$this->parameters->getTable (), 
-				implode ( '`, `', $columns ), 
+		return sprintf (
+				"INSERT INTO `%s` (`%s`) VALUES (%s)",
+				$this->parameters->getTable (),
+				implode ( '`, `', $columns ),
 				implode ( ", ", $values ) );
 	}
-
 	private function _createGroupBy() {
 		// Check if ORDER BY can be used with the current command
 		if ((Config::PDO_GROUPBY & Config::commandList [$this->parameters->getCommand ()]) == 0) {
@@ -241,6 +240,8 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		}
 		// Load GROUP BY's
 		$groups = $this->parameters->getGroup ();
+		// Result variable
+		$result = "";
 		// Check if ORDER BY is not null and has items
 		if ($groups == null || count ( $groups ) == 0) {
 			// No ordering
@@ -262,8 +263,19 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 			}
 			// Check if multiple tables are used
 			if ($this->multipleTables) {
-				// use `table`.`column` ASC|DESC
-				// $list [] = sprintf ( "`%s`.`%s` %s", $v [0], $v [1], ($v [2] === true ? "ASC" : "DESC") );
+
+				if (! $this->parameters->tableExists ( $table )) {
+					throw new \Exception ( sprintf ( "Table `%s` does not exist!", $table ) );
+				}
+				if (! in_array ( $table, $this->parameters->getTables () )) {
+					throw new \Exception ( sprintf ( "Table `%s` is not available in this query!", $table ) );
+				}
+				// Verify Source columns exists
+				if (! $this->parameters->columnExists ( $table, $column )) {
+					throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $table, $column ) );
+				}
+
+				$list [] = sprintf ( "`%s`.`%s`", $table, $column );
 			} else {
 				// Check if column is specified in current columns
 				if (! in_array ( $column, $this->columns )) {
@@ -274,16 +286,18 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 					throw new \Exception ( $message );
 				}
 				// Add column to the list
-				$list [] = $column;
+				$list [] = sprintf ( "`%s`", $column );
 			}
 		}
+		// Create result
+		$result = sprintf ( "GROUP BY %s", implode ( ", ", $list ) ) . PHP_EOL;
 		// Return result
-		return sprintf ( "GROUP BY `%s", implode ( "`, `", $list ) ) . "`" . PHP_EOL;
+		return $result;
 	}
 
 	/**
 	 * Creates the JOIN part in the Query
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return string
@@ -313,7 +327,7 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 
 	/**
 	 * Creates the LIMIT part in the Query
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return string
@@ -341,7 +355,7 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 
 	/**
 	 * Creates the ORDER BY part in the Query
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return string
@@ -379,7 +393,7 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 
 	/**
 	 * Creates the SELECT part in the Query
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @throws \Exception
@@ -398,6 +412,13 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		if ($this->multipleTables !== true) {
 			// Check if only 1 columns is defined and its '*'
 			if (count ( $columns ) == 1 && $columns [0] == "*") {
+				// Loop through all columns
+				foreach ( $this->mysql->getTableColumns ( $this->parameters->getTable () ) as $column ) {
+					$this->columns [] = $column;
+				}
+				if ($this->parameters->isDistinct ()) {
+					throw new \Exception ( "When using DISTINCT, columns must be defined!" );
+				}
 				// Show ALL columns
 				return sprintf ( "SELECT *%sFROM `%s`", PHP_EOL . "\t", $rootTable ) . PHP_EOL;
 			} else {
@@ -411,7 +432,12 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 				}
 				$this->columns = $columns;
 				// Return result
-				return sprintf ( "SELECT `%s` %sFROM `%s`", implode ( '`, `', $columns ), PHP_EOL, $rootTable ) . PHP_EOL;
+				return sprintf (
+						"SELECT %s`%s` %sFROM `%s`",
+						$this->parameters->isDistinct () ? "DISTINCT " : "",
+						implode ( '`, `', $columns ),
+						PHP_EOL,
+						$rootTable ) . PHP_EOL;
 			}
 		} else {
 			// Multiple tables are used, fully named columns are now required
@@ -420,25 +446,31 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 			$tableColumns = array ();
 			// Check if only 1 columns is defined and its '*'
 			if (count ( $columns ) == 1 && $columns [0] == "*") {
+				if ($this->parameters->isDistinct ()) {
+					throw new \Exception ( "When using DISTINCT, columns must be defined!" );
+				}
 				// Show ALL columns, Loop through all tables
 				foreach ( $this->parameters->getTables () as $table ) {
 					// Loop through all columns
 					foreach ( $this->mysql->getTableColumns ( $table ) as $column ) {
 						// Add new column with alias
-						$tableColumns [] = sprintf ( 
-								"`%s`.`%s` as `%s`", 
-								$table, 
-								$column, 
+						$tableColumns [] = sprintf (
+								"`%s`.`%s` as `%s`",
+								$table,
+								$column,
 								$this->_prependTableName ( $column, $table ) );
 						// Store used column(s)
-						$this->columns [] = $table . \SmartPDO\Config::$multiTableSeparator . $column;
+						$this->columns [] = $table . \SmartPDO\Config::$tableAliasSeparator . $column;
 					}
 				}
 			} else {
+				if ($this->parameters->isDistinct ()) {
+					$result = "SELECT DISTINCT" . PHP_EOL . "\t";
+				}
 				// Show specified columns, loop through all columns
 				foreach ( $columns as $column ) {
 					// to explode the column name
-					$tmp = explode ( Config::$multiTableSeparator, $column );
+					$tmp = explode ( Config::$tableAliasSeparator, $column );
 					// Load table name, if specifyd else root table
 					$tmpTable = isset ( $tmp [1] ) ? $this->mysql->getTableName ( $tmp [0] ) : $rootTable;
 					// Load table column
@@ -455,13 +487,13 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 						throw new \Exception ( sprintf ( "Column `%s`.`%s` does not exist!", $tmpTable, $tmpColumn ) );
 					}
 					// Add new column with alias
-					$tableColumns [] = sprintf ( 
-							"`%s`.`%s` as `%s`", 
-							$tmpTable, 
-							$tmpColumn, 
+					$tableColumns [] = sprintf (
+							"`%s`.`%s` as `%s`",
+							$tmpTable,
+							$tmpColumn,
 							$this->_prependTableName ( $tmpColumn, $tmpTable ) );
 					// Store used column(s)
-					$this->columns [] = $tmpTable . \SmartPDO\Config::$multiTableSeparator . $column;
+					$this->columns [] = $tmpTable . \SmartPDO\Config::$tableAliasSeparator . $column;
 				}
 			}
 			// Add each table column in a seperate line
@@ -475,7 +507,7 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 
 	/**
 	 * Creates the UPDATE part in the Query
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return string
@@ -498,16 +530,16 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		// Add all values for the prepared statement
 		$this->values = array_merge ( $this->values, array_values ( $this->parameters->getSet () ) );
 		// Return result
-		return sprintf ( 
-				"UPDATE `%s` SET" . PHP_EOL . "\t`%s` = ?", 
-				$this->parameters->getTable (), 
-				implode ( sprintf ( '` = ?,%s`', PHP_EOL . "\t" ), $columns ), 
+		return sprintf (
+				"UPDATE `%s` SET" . PHP_EOL . "\t`%s` = ?",
+				$this->parameters->getTable (),
+				implode ( sprintf ( '` = ?,%s`', PHP_EOL . "\t" ), $columns ),
 				implode ( ", ", $values ) ) . PHP_EOL;
 	}
 
 	/**
 	 * Creates the WHERE part in the Query
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @throws \Exception
@@ -540,7 +572,7 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 				if ($placeLogic == true) {
 					$skip = array ();
 					$skip [] = strtolower ( "SmartPDO\Parameters\Group" );
-					
+
 					if (! in_array ( strtolower ( get_class ( $w ) ), $skip )) {
 						$result .= sprintf ( " %s ", $w->isAnd () ? "AND" : "OR" );
 					}
@@ -560,56 +592,56 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 				 * @var \SmartPDO\Parameters\WhereLogic $w
 				 */
 				switch (strtolower ( get_class ( $w ) )) {
-					
+
 					case "smartpdo\parameters\group" :
 						$op = $w->isAnd () ? "AND" : "OR";
 						$result .= sprintf ( " ) %s%s%s( ", $op, PHP_EOL, str_repeat ( "\t", $depth ) );
 						$placeLogic = false;
 						break;
-					
+
 					case "smartpdo\parameters\where" :
 						$result .= $this->parseWhere ( $w );
 						break;
-					
+
 					case "smartpdo\parameters\where\between" :
 						$result .= $this->parseWhereBetween ( $w );
 						break;
-					
+
 					case "smartpdo\parameters\where\in" :
 						$result .= $this->parseWhereIn ( $w );
 						break;
-					
+
 					case "smartpdo\parameters\where\like" :
 						$result .= $this->parseWhereLike ( $w );
 						break;
-					
+
 					default :
 						throw new \Exception ( get_class ( $w ) . ' is not configured' );
 						break;
 				}
 			} else {
-				
+
 				// Checking what to do: WHERE, WHEREIN, LIKE etc.
 				switch ($w [0]) {
 					case "IN" :
 						if ($this->multipleTables == true) {
-							$result .= sprintf ( 
-									"`%s`.`%s` %sIN (%s)", 
-									$w [1], 
-									$w [2], 
-									$w [4] != true ? "" : "NOT ", 
+							$result .= sprintf (
+									"`%s`.`%s` %sIN (%s)",
+									$w [1],
+									$w [2],
+									$w [4] != true ? "" : "NOT ",
 									implode ( ', ', array_fill ( 0, count ( $w [3] ), "?" ) ) );
 							$this->values = array_merge ( $this->values, $w [3] );
 						} else {
-							$result .= sprintf ( 
-									"`%s` %sIN (%s)", 
-									$w [2], 
-									$w [4] != true ? "" : "NOT ", 
+							$result .= sprintf (
+									"`%s` %sIN (%s)",
+									$w [2],
+									$w [4] != true ? "" : "NOT ",
 									implode ( ', ', array_fill ( 0, count ( $w [3] ), "?" ) ) );
 							$this->values = array_merge ( $this->values, $w [3] );
 						}
 						break;
-					
+
 					case "LIKE" :
 						if ($this->multipleTables == true) {
 							$result .= sprintf ( "`%s`.`%s` %sLIKE ?", $w [1], $w [2], $w [4] == true ? 'NOT ' : '' );
@@ -617,13 +649,13 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 							$result .= sprintf ( "`%s` %sLIKE ?", $w [2], $w [4] == true ? 'NOT ' : '' );
 						}
 						$this->values [] = $w [3];
-						
+
 						if ($w [5] != "!") {
 							$result .= " ESCAPE ?";
 							$this->values [] = $w [5];
 						}
 						break;
-					
+
 					default :
 						throw new \Exception ( $w [0] . ' is not configured' );
 						break;
@@ -631,7 +663,7 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 			}
 		}
 		// Trim result
-		
+
 		$result .= " )";
 		$result = trim ( $result );
 		// Return result
@@ -640,7 +672,7 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 
 	/**
 	 * Prepend table to column name if using multiple tables
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $column
@@ -653,7 +685,7 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		if ($this->multipleTables) {
 			// remove the prefix of the provided table
 			$prepend = substr ( $table, strlen ( $this->mysql->getPrefix () ) );
-			return $prepend . Config::$multiTableSeparator . $column;
+			return $prepend . Config::$tableAliasSeparator . $column;
 		} else {
 			return $columnl;
 		}
@@ -661,10 +693,10 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 
 	/**
 	 * Parse JOIN to valid syntax
-	 * 
+	 *
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @version 1
-	 * @param \SmartPDO\Parameters\Join $join        	
+	 * @param \SmartPDO\Parameters\Join $join
 	 * @return string
 	 */
 	private function parseJoin(\SmartPDO\Parameters\Join $join) {
@@ -674,25 +706,25 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		$sc = $join->getSourceColumn ();
 		$tt = $join->getTargetTable ();
 		$tc = $join->getTargetColumn ();
-		
+
 		// Result variable
 		$result = "";
-		
+
 		// Add: [INNER LEFT RIGHT] JOIN `table`
 		$result .= sprintf ( "%s `%s`%s", $type, $tt, PHP_EOL );
 		// Add: on `table`.`column` = `table2`.`column2`
 		$result .= sprintf ( "\tON `%s`.`%s` = `%s`.`%s`" . PHP_EOL, $tt, $tc, $st, $sc );
-		
+
 		// Return syntax
 		return $result;
 	}
 
 	/**
 	 * Parse WHERE to valid syntax
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 * @param \SmartPDO\Parameters\Where $where        	
+	 * @param \SmartPDO\Parameters\Where $where
 	 *
 	 * @return string
 	 */
@@ -702,16 +734,16 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		$column = $where->getColumn ();
 		$comparison = $where->getComparison ();
 		$value = $where->getValue ();
-		
+
 		// Result variable
 		$result = "";
-		
+
 		// Check if multiple tables are used due to JOINS
 		if ($this->multipleTables == true) {
 			// Add table name
 			$result .= sprintf ( "`%s`.", $table );
 		}
-		
+
 		// Check if value is NULL
 		if ($value == NULL) {
 			// IS NULL syntax
@@ -728,10 +760,10 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 
 	/**
 	 * Parse WHERE BETWEEN to valid syntax
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 * @param \SmartPDO\Parameters\Where\Between $between        	
+	 * @param \SmartPDO\Parameters\Where\Between $between
 	 *
 	 * @return string
 	 */
@@ -742,26 +774,26 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		$start = $between->getStart ();
 		$stop = $between->getStop ();
 		$not = $between->isNot ();
-		
+
 		// Result variable
 		$result = "";
-		
+
 		// Check if start/stop is DateTime: Convert
 		if (is_object ( $start ) && get_class ( $start ) == "DateTime") {
 			$start = $start->format ( "Y-m-d H:i:s" );
 			$stop = $stop->format ( "Y-m-d H:i:s" );
 		}
-		
+
 		// Check if multiple tables are used due to JOINS
 		if ($this->multipleTables == true) {
 			// Add table name
 			$result .= sprintf ( "`%s`.", $table );
 		}
-		
+
 		// Add start/stop values
 		$this->values [] = $start;
 		$this->values [] = $stop;
-		
+
 		// Create BETWEEN syntax
 		$result .= sprintf ( "`%s` %sBETWEEN ? AND ?", $column, $not ? 'NOT ' : '' );
 		// Return syntax
@@ -770,10 +802,10 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 
 	/**
 	 * Parse WHERE IN to valid syntax
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 * @param \SmartPDO\Parameters\Where\In $in        	
+	 * @param \SmartPDO\Parameters\Where\In $in
 	 *
 	 * @return string
 	 */
@@ -781,16 +813,16 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		// Load parameters
 		$table = $in->getTable ();
 		$column = $in->getColumn ();
-		
+
 		// Result variable
 		$result = "";
-		
+
 		// Check if multiple tables are used due to JOINS
 		if ($this->multipleTables == true) {
 			// Add table name
 			$result .= sprintf ( "`%s`.", $table );
 		}
-		
+
 		// register values
 		$this->values = array_merge ( $this->values, array_values ( $in->getValues () ) );
 		// Create prepared ? values for query
@@ -803,10 +835,10 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 
 	/**
 	 * Parse WHERE LIKE to valid syntax
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 * @param \SmartPDO\Parameters\Where\Like $like        	
+	 * @param \SmartPDO\Parameters\Where\Like $like
 	 *
 	 * @return string
 	 */
@@ -815,10 +847,10 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		$table = $like->getTable ();
 		$column = $like->getColumn ();
 		$escape = $like->getEscape ();
-		
+
 		// Result variable
 		$result = "";
-		
+
 		// Check if multiple tables are used due to JOINS
 		if ($this->multipleTables == true) {
 			// Add table name
@@ -827,14 +859,14 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		// Add columns and statement
 		$result .= sprintf ( "`%s` %sLIKE ?", $column, $like->isNot () ? "NOT " : "" );
 		$this->values [] = $like->getValue ();
-		
+
 		// override ESCAPE character if different
 		if ($escape != '!') {
 			// $result .= sprintf ( " ESCAPE '%s'", $escape );
 			$result .= " ESCAPE ?";
 			$this->values [] = $escape;
 		}
-		
+
 		return $result;
 	}
 
@@ -875,21 +907,19 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 		if ($this->parameters->getCommand () != 'SELECT') {
 			return null;
 		}
-		// Get and store the rows
-		$this->rows = $this->sth->fetchAll ();
 		// Check if multiple tables are used
-		if ($this->multipleTables) {
+		if ($this->multipleTables === true && Config::$multiArrayRows === true) {
 			// Create temp rows and tables
 			$rows = array ();
 			$tables = array ();
 			// Loop through all rows
-			foreach ( $this->rows as $key => $values ) {
+			foreach ( $this->sth->fetchAll () as $key => $values ) {
 				// Check if tables are detected
 				if (count ( $tables ) == 0) {
 					// Loop through all keys ( columns )
 					foreach ( array_keys ( $values ) as $c ) {
 						// split the string with the table separotor in the Config
-						$tmp = explode ( Config::$multiTableSeparator, $c );
+						$tmp = explode ( Config::$tableAliasSeparator, $c );
 						// Check if table is not already defined
 						if (! isset ( $tables [$tmp [0]] )) {
 							// Define table name
@@ -905,7 +935,7 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 				// Loop through all values
 				foreach ( $values as $column => $value ) {
 					// split the string with the table separotor in the Config
-					$tmp = explode ( Config::$multiTableSeparator, $column );
+					$tmp = explode ( Config::$tableAliasSeparator, $column );
 					// Fill : [ROW] [Table] [COLUMN] = Value
 					$rows [$key] [$tmp [0]] [$tmp [1]] = $value;
 					// var_dump($tmp);
@@ -913,6 +943,9 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 			}
 			// Overwrite rows
 			$this->rows = $rows;
+		} else {
+			// Get and store the rows
+			$this->rows = $this->sth->fetchAll ();
 		}
 		// Return all rows
 		return $this->rows;

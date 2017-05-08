@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Bootstrap 101 Template</title>
+<title>SmartPdo Test</title>
 <!-- Bootstrap -->
 <link href="https://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://getbootstrap.com/assets/css/docs.min.css"
@@ -24,7 +24,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-9">
-		
+
 <?php
 use SmartPDO\Config;
 
@@ -35,7 +35,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 Config::$readOnly = true;
 /**
  * SmartPDO MySQL handler
- * 
+ *
  * @var \SmartPDO\MySQL $MySQL
  */
 $MySQL = new \SmartPDO\MySQL ( "smartpdo", "PvZZMGeeAp0UPtC4", "smartpdo", "spdo" );
@@ -58,7 +58,7 @@ foreach ( $it as $fileinfo ) {
 		$methods [$Method] = array ();
 	}
 	$counter ++;
-	
+
 	$code = file_get_contents ( $fileinfo->getRealPath () );
 	if (preg_match ( '/^\$desc = "(.+).?";/m', $code, $matches )) {
 		$methods [$Method] [] = $matches [1];
@@ -66,22 +66,22 @@ foreach ( $it as $fileinfo ) {
 	} else {
 		$methods [$Method] [] = "N/A";
 	}
-	
-	echo "<div style='margin-bottom:10px;' id='$Method-" . ($counter - 1) . "'><h2>" . end ( 
+
+	echo "<div style='margin-bottom:10px;' id='$Method-" . ($counter - 1) . "'><h2>" . end (
 			$methods [$Method] ) . "</h2></div>" . PHP_EOL . PHP_EOL;
 	echo '<pre><code class="php" style="background: none;">' . htmlentities ( $code ) . "</code></pre>";
 	// echo str_replace ( "\n", "\n\t", "\t" . file_get_contents ( $fileinfo->getRealPath () ) );
-	
+
 	echo PHP_EOL . PHP_EOL . "<div style='margin-bottom:10px;'>Result</div> " . PHP_EOL . PHP_EOL;
-	
+
 	$output = ob_get_contents ();
 	ob_clean ();
-	
+
 	require_once $fileinfo->getRealPath ();
-	
+
 	$script = ob_get_contents ();
 	ob_clean ();
-	
+
 	echo $output;
 	echo '<pre>' . $script . "</pre>" . PHP_EOL . PHP_EOL;
 	// echo str_replace ( "\n", "\n\t", "\t" . $script ) . PHP_EOL . PHP_EOL;
@@ -100,7 +100,7 @@ foreach ( $methods as $m => $v ) {
 							<a href="#<?=$m?>"><?=$m?></a>
 							<ul class="nav">
 <?php
-	
+
 	foreach ( $v as $k => $desc ) {
 		?>
 								<li>

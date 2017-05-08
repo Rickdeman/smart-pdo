@@ -1,5 +1,5 @@
 <?php
-
+$desc = "Single value";
 /**
  * insert - Example #2
  *

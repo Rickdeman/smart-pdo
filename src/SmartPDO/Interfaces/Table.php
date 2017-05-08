@@ -7,7 +7,7 @@ namespace SmartPDO\Interfaces;
 
 /**
  * Interface for all SmartPDO Table handlers
- * 
+ *
  * @author Rick de Man
  * @version 1
  */
@@ -15,7 +15,7 @@ interface Table {
 
 	/**
 	 * Mysql table constructor
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param \SmartPDO\Interfaces\Database $db
@@ -27,7 +27,7 @@ interface Table {
 
 	/**
 	 * add (AND) BETWEEN
-	 * 
+	 *
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @version 1
 	 * @param string $column
@@ -45,7 +45,7 @@ interface Table {
 
 	/**
 	 * Set columns to be selected
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $columns
@@ -56,7 +56,7 @@ interface Table {
 
 	/**
 	 * Creates a DELETE query
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return \SmartPDO\MySQL\Table
@@ -64,8 +64,17 @@ interface Table {
 	public function delete();
 
 	/**
+	 * Enable DISTINCT for a WHERE query, columns must be defined!
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 * @return \SmartPDO\MySQL\Table
+	 */
+	public function distinct();
+
+	/**
 	 * Execute query with created parameters
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return \SmartPDO\MySQL\Table\Rows
@@ -74,7 +83,7 @@ interface Table {
 
 	/**
 	 * create a AND/OR group
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param bool $and
@@ -85,7 +94,7 @@ interface Table {
 
 	/**
 	 * Add GROUP BY
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $column
@@ -98,7 +107,7 @@ interface Table {
 
 	/**
 	 * Add (AND) IN
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $column
@@ -115,7 +124,7 @@ interface Table {
 
 	/**
 	 * Add INNER JOIN
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $targetTable
@@ -132,7 +141,7 @@ interface Table {
 
 	/**
 	 * Create an INSERT query
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return \SmartPDO\MySQL\Table
@@ -141,7 +150,7 @@ interface Table {
 
 	/**
 	 * Add LEFT JOIN
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $targetTable
@@ -158,7 +167,7 @@ interface Table {
 
 	/**
 	 * add LIKE
-	 * 
+	 *
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @version 1
 	 * @param string $column
@@ -176,7 +185,7 @@ interface Table {
 
 	/**
 	 * Add LIMIT
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param integer $items
@@ -189,7 +198,7 @@ interface Table {
 
 	/**
 	 * Add ORDER BY
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $column
@@ -204,7 +213,7 @@ interface Table {
 
 	/**
 	 * Add RIGHT JOIN
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $targetTable
@@ -221,7 +230,7 @@ interface Table {
 
 	/**
 	 * Create an SELECT query, default
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return \SmartPDO\MySQL\Table
@@ -230,7 +239,7 @@ interface Table {
 
 	/**
 	 * Add SET
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $column
@@ -245,7 +254,7 @@ interface Table {
 
 	/**
 	 * Set the AND to OR for single time
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param number $times
@@ -256,7 +265,7 @@ interface Table {
 
 	/**
 	 * Create an UPDATE query
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return \SmartPDO\MySQL\Table
@@ -265,7 +274,7 @@ interface Table {
 
 	/**
 	 * Add key value for inserting
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $column
@@ -278,7 +287,7 @@ interface Table {
 
 	/**
 	 * Add (AND) WHERE comparison
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $column

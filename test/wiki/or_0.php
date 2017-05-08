@@ -1,15 +1,15 @@
 <?php
-
+$desc = "Group";
 /**
  * or - Example #1
  *
  * When creating an OR there are 2 options with a Bool ( default: True )
- *  - True		Create a new OR group
- *  - False		Creates a left handed OR
+ * - True Create a new OR group
+ * - False Creates a left handed OR
  *
  * @var \SmartPDO\MySQL\Table $table
  */
-$table = $MySQL->getTable ( 'customer' )->where ( "ID", 1 )->group ()->where ( "ID", 1 );
+$table = $MySQL->getTable ( 'customer' )->where ( "ID", 1 )->setOr ()->where ( "ID", 1 );
 
 /**
  *

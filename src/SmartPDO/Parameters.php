@@ -7,7 +7,7 @@ namespace SmartPDO;
 
 /**
  * Smart PDO Table parameters handler
- * 
+ *
  * @author Rick de Man <rick@rickdeman.nl>
  * @version 1
  */
@@ -15,121 +15,121 @@ class Parameters {
 
 	/**
 	 * Placeholder for the columns to be selected, default = array( '*' )
-	 * 
+	 *
 	 * @var string[]
 	 */
 	private $columns = array (
-			'*' 
+			'*'
 	);
 
 	/**
 	 * Placeholder for the main query statement: SELECT DELETE etc
-	 * 
+	 *
 	 * @var string
 	 */
 	private $command = 'SELECT';
 
 	/**
 	 * Placeholder for the DISTINCT flag
-	 * 
+	 *
 	 * @var bool
 	 */
 	private $distinct = false;
 
 	/**
 	 * Placeholder for all GROUP BY columns
-	 * 
+	 *
 	 * @var \SmartPDO\Parameters\GroupBy[]
 	 */
 	private $group = array ();
 
 	/**
 	 * Placeholder for each SET
-	 * 
+	 *
 	 * @var array
 	 */
 	private $insert = null;
 
 	/**
 	 * Placeholder for each JOIN
-	 * 
+	 *
 	 * @var \SmartPDO\Parameters\Join[]
 	 */
 	private $joins = null;
 
 	/**
 	 * Placeholder for the LIMIT
-	 * 
+	 *
 	 * @var \SmartPDO\Parameters\Limit
 	 */
 	private $limit = null;
 
 	/**
 	 * Storage for all MySQL tables with columns
-	 * 
+	 *
 	 * @var array
 	 */
 	private $mysqlTables = null;
 
 	/**
 	 * Placeholder for each ORDER
-	 * 
+	 *
 	 * @var \SmartPDO\Parameters\OrderBy[]
 	 */
 	private $order = null;
 
 	/**
 	 * Placeholder for the table prefix
-	 * 
+	 *
 	 * @var string
 	 */
 	private $prefix = "";
 
 	/**
 	 * placeholder for each SET key, value
-	 * 
+	 *
 	 * @var array
 	 */
 	private $set = null;
 
 	/**
 	 * Placeholder for the current table
-	 * 
+	 *
 	 * @var string
 	 */
 	private $table = "";
 
 	/**
 	 * Placeholder for all selected table
-	 * 
+	 *
 	 * @var array
 	 */
 	private $tables = array ();
 
 	/**
 	 * Placeholder for all WHERE datasets
-	 * 
+	 *
 	 * @var array
 	 */
 	private $where = array ();
-	
+
 	/**
 	 * Available JOIN types
-	 * 
+	 *
 	 * @var array
 	 */
 	const JoinList = array (
 			"INNER JOIN",
 			"LEFT JOIN",
-			"RIGHT JOIN" 
+			"RIGHT JOIN"
 	);
 
 	/**
 	 * Initialise the Parameter set with the mysql
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 * @param array $tables        	
+	 * @param array $tables
 	 */
 	function __Construct(array $tables) {
 		$this->mysqlTables = $tables;
@@ -137,7 +137,7 @@ class Parameters {
 
 	/**
 	 * Verify that a Table Column exists
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $table
@@ -156,7 +156,7 @@ class Parameters {
 
 	/**
 	 * Get the requested columns to be shown
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return string[]
@@ -167,7 +167,7 @@ class Parameters {
 
 	/**
 	 * Get the current query command
-	 * 
+	 *
 	 * @see array \SmartPDO\Config::commandList
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
@@ -179,7 +179,7 @@ class Parameters {
 
 	/**
 	 * Get the GROUP BY collection
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return \SmartPDO\Parameters\GroupBy[]
@@ -190,7 +190,7 @@ class Parameters {
 
 	/**
 	 * Get the INSERT collection
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return array
@@ -201,7 +201,7 @@ class Parameters {
 
 	/**
 	 * Get the JOIN collection
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return \SmartPDO\Parameters\Join[]
@@ -212,7 +212,7 @@ class Parameters {
 
 	/**
 	 * Get the LIMIT
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return \SmartPDO\Parameters\Limit
@@ -224,7 +224,7 @@ class Parameters {
 	/**
 	 * Get the ORDER collection
 	 * array markup: Column => ASC|DESC
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return \SmartPDO\Parameters\OrderBy[]
@@ -235,7 +235,7 @@ class Parameters {
 
 	/**
 	 * Get the table prefix
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return array
@@ -247,7 +247,7 @@ class Parameters {
 	/**
 	 * Get the SET collection
 	 * arrays markup: column => value
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return array
@@ -258,7 +258,7 @@ class Parameters {
 
 	/**
 	 * Get the main table
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return string
@@ -269,7 +269,7 @@ class Parameters {
 
 	/**
 	 * Return all tables which will be used
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return string[]
@@ -280,7 +280,7 @@ class Parameters {
 
 	/**
 	 * Get the WHERE collection
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @return \SmartPDO\Parameters\WhereLogic[]
@@ -290,8 +290,20 @@ class Parameters {
 	}
 
 	/**
+	 * Checks if the current query requires a Distinc
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return boolean
+	 */
+	public function isDistinct() {
+		return $this->distinct === true;
+	}
+
+	/**
 	 * FunctionDescription
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $columns
@@ -303,7 +315,7 @@ class Parameters {
 
 	/**
 	 * Register the sql command
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @see array \SmartPDO\Config::commandList
@@ -326,10 +338,10 @@ class Parameters {
 
 	/**
 	 * Register a new AND/OR GROUP
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
-	 * @param bool $and        	
+	 * @param bool $and
 	 *
 	 * @throws \Exception
 	 */
@@ -343,7 +355,7 @@ class Parameters {
 
 	/**
 	 * Register an GROUP BY
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $column
@@ -373,7 +385,7 @@ class Parameters {
 
 	/**
 	 * Register an INSERT
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $column
@@ -399,7 +411,7 @@ class Parameters {
 
 	/**
 	 * Register an JOIN
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @see array \SmartPDO\Parameters::JoinList
@@ -436,13 +448,18 @@ class Parameters {
 			$this->joins = array ();
 		}
 		// Register INNER JOIN
-		$this->joins [] = new \SmartPDO\Parameters\Join ( $type, $sourceTable, $sourceColumn, $targetTable, $targetColumn );
+		$this->joins [] = new \SmartPDO\Parameters\Join (
+				$type,
+				$sourceTable,
+				$sourceColumn,
+				$targetTable,
+				$targetColumn );
 		$this->tables [] = $targetTable;
 	}
 
 	/**
 	 * Register the LIMIT
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param int $items
@@ -463,7 +480,7 @@ class Parameters {
 		if (! is_int ( $start )) {
 			throw new \Exception ( "Expected integer, '" . gettype ( $start ) . "' given" );
 		}
-		
+
 		if (! ($items >= 0)) {
 			throw new \Exception ( "items value must positive!" );
 		}
@@ -476,7 +493,7 @@ class Parameters {
 
 	/**
 	 * Register an ORDER BY
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $column
@@ -511,7 +528,7 @@ class Parameters {
 
 	/**
 	 * Register the database used prefix
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $prefix
@@ -529,7 +546,7 @@ class Parameters {
 
 	/**
 	 * Register a SET key value
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $column
@@ -555,7 +572,7 @@ class Parameters {
 
 	/**
 	 * Register the table name
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $table
@@ -574,7 +591,7 @@ class Parameters {
 
 	/**
 	 * Register a new dataset: WHERE
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @see array \SmartPDO\Config::compareList
@@ -609,7 +626,7 @@ class Parameters {
 
 	/**
 	 * Register a new dataset: WHERE BETWEEN
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $column
@@ -645,7 +662,8 @@ class Parameters {
 			$allowed = true;
 		}
 		// Check both: DateTime
-		if ((is_object ( $start ) && is_object ( $stop )) && (get_class ( $start ) == "DateTime" && get_class ( $stop ) == "DateTime")) {
+		if ((is_object ( $start ) && is_object ( $stop )) && (get_class (
+				$start ) == "DateTime" && get_class ( $stop ) == "DateTime")) {
 			$allowed = true;
 		}
 		if (is_string ( $start ) && is_string ( $stop )) {
@@ -661,7 +679,7 @@ class Parameters {
 
 	/**
 	 * Register a new dataset: WHERE IN
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $column
@@ -689,7 +707,7 @@ class Parameters {
 
 	/**
 	 * Register a LIKE
-	 * 
+	 *
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @version 1
 	 * @param string $column
@@ -723,8 +741,19 @@ class Parameters {
 	}
 
 	/**
+	 * Enable Distinct, columns must be defined
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 */
+	public function setDistinct() {
+		$this->distinct = true;
+	}
+
+	/**
 	 * Verify that a Table exists
-	 * 
+	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @param string $table
@@ -737,7 +766,7 @@ class Parameters {
 
 	/**
 	 * Check if a table exists with its columns
-	 * 
+	 *
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @version 1
 	 * @param string $table

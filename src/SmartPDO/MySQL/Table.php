@@ -7,7 +7,7 @@ namespace SmartPDO\MySQL;
 
 /**
  * MySQL Table handler
- * 
+ *
  * @author Rick de Man <rick@rickdeman.nl>
  * @version 1
  */
@@ -15,42 +15,42 @@ class Table implements \SmartPDO\Interfaces\Table {
 
 	/**
 	 * Flag for AND/OR, must be reset after each use!
-	 * 
+	 *
 	 * @var string
 	 */
 	private $and = true;
 
 	/**
 	 * Mysql class
-	 * 
+	 *
 	 * @var \SmartPDO\MySQL
 	 */
 	private $mysql;
 
 	/**
 	 * Number of times a OR should be placed
-	 * 
+	 *
 	 * @var integer
 	 */
 	private $ors = 0;
 
 	/**
 	 * Holds the parameter set for building querys
-	 * 
+	 *
 	 * @var \SmartPDO\Parameters
 	 */
 	private $parameters;
 
 	/**
 	 * Requestes table name without prefix
-	 * 
+	 *
 	 * @var string
 	 */
 	private $tableName;
 
 	/**
 	 * Contructor for the MySQL Table handler
-	 * 
+	 *
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * @version 1
 	 * @param \SmartPDO\Interfaces\Database $db
@@ -60,12 +60,15 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 */
 	function __Construct(\SmartPDO\Interfaces\Database $db, $table) {
 		$this->parameters = new \SmartPDO\Parameters ( $db->getTables () );
-		// Store SmartPDO ( is interface )
-		$this->mysql = $db;
+
 		// Store parameters
 		$this->parameters->registerPrefix ( $db->getPrefix () );
 		$this->parameters->registerTable ( $table );
 		$this->parameters->registerCommand ( "SELECT" );
+
+		// Store SmartPDO ( is interface )
+		$this->mysql = $db;
+
 		// Store table name without prefix
 		$this->tableName = substr ( $table, strlen ( $db->getPrefix () ) );
 	}
@@ -123,6 +126,20 @@ class Table implements \SmartPDO\Interfaces\Table {
 	public function delete() {
 		// Register as DELETE command
 		$this->parameters->registerCommand ( "DELETE" );
+		// Return current object
+		return $this;
+	}
+
+	/**
+	 *
+	 * {@inheritdoc}
+	 *
+	 * @see \SmartPDO\Interfaces\Table::distinct()
+	 *
+	 */
+	public function distinct() {
+		// Enable Distinct mode
+		$this->parameters->setDistinct ();
 		// Return current object
 		return $this;
 	}
@@ -214,11 +231,11 @@ class Table implements \SmartPDO\Interfaces\Table {
 		$sourceTable = $this->mysql->getTableName ( $sourceTable != null ? $sourceTable : $this->tableName );
 		$sourceColumn = $sourceColumn != null ? $sourceColumn : "ID";
 		// Insert new INNER JOIN dataset
-		$this->parameters->registerJoin ( 
-				"INNER JOIN", 
-				$this->mysql->getTableName ( $sourceTable ), 
-				$sourceColumn, 
-				$this->mysql->getTableName ( $targetTable ), 
+		$this->parameters->registerJoin (
+				"INNER JOIN",
+				$this->mysql->getTableName ( $sourceTable ),
+				$sourceColumn,
+				$this->mysql->getTableName ( $targetTable ),
 				$targetColumn );
 		// Return current object
 		return $this;
@@ -256,11 +273,11 @@ class Table implements \SmartPDO\Interfaces\Table {
 		$sourceTable = $this->mysql->getTableName ( $sourceTable != null ? $sourceTable : $this->tableName );
 		$sourceColumn = $sourceColumn != null ? $sourceColumn : "ID";
 		// Insert new LEFT JOIN dataset
-		$this->parameters->registerJoin ( 
-				"LEFT JOIN", 
-				$this->mysql->getTableName ( $sourceTable ), 
-				$sourceColumn, 
-				$this->mysql->getTableName ( $targetTable ), 
+		$this->parameters->registerJoin (
+				"LEFT JOIN",
+				$this->mysql->getTableName ( $sourceTable ),
+				$sourceColumn,
+				$this->mysql->getTableName ( $targetTable ),
 				$targetColumn );
 		// Return current object
 		return $this;
@@ -351,11 +368,11 @@ class Table implements \SmartPDO\Interfaces\Table {
 		$sourceTable = $this->mysql->getTableName ( $sourceTable != null ? $sourceTable : $this->tableName );
 		$sourceColumn = $sourceColumn != null ? $sourceColumn : "ID";
 		// Insert new RIGHT JOIN dataset
-		$this->parameters->registerJoin ( 
-				"RIGHT JOIN", 
-				$this->mysql->getTableName ( $sourceTable ), 
-				$sourceColumn, 
-				$this->mysql->getTableName ( $targetTable ), 
+		$this->parameters->registerJoin (
+				"RIGHT JOIN",
+				$this->mysql->getTableName ( $sourceTable ),
+				$sourceColumn,
+				$this->mysql->getTableName ( $targetTable ),
 				$targetColumn );
 		// Return current object
 		return $this;
