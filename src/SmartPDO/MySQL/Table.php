@@ -465,8 +465,6 @@ class Table implements \SmartPDO\Interfaces\Table {
 		// Return current object
 		return $this;
 	}
-	public function setWhere(\SmartPDO\Where $where) {
-	}
 
 	/**
 	 *

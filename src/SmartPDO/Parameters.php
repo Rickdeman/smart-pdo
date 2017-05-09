@@ -799,7 +799,7 @@ class Parameters {
 		// Verify columns exists
 		if (! $this->columnExists ( $table, $column )) {
 			$message = "column `%s`.`%s` does not exist!";
-			$message = sprintf ( $message, $sourceTable, $column );
+			$message = sprintf ( $message, $table, $column );
 			throw new \Exception ( $message );
 		}
 	}

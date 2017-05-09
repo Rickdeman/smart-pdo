@@ -294,16 +294,6 @@ interface Table {
 	public function setOr($times = 1);
 
 	/**
-	 * Set the WHERE clausule (
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
-	 * @param \SmartPDO\Where $where
-	 */
-	public function setWhere(\SmartPDO\Where $where);
-
-	/**
 	 * Create an UPDATE query
 	 *
 	 * @version 1
