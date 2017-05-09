@@ -8,66 +8,69 @@ namespace SmartPDO;
 class Where {
 
 	/**
-	 * Database PDO handler
-	 *
-	 * @var \SmartPDO\Interfaces\Database
-	 */
-	private $db;
-
-	/**
-	 * Master table
+	 * Flag for AND/OR, must be reset after each use!
 	 *
 	 * @var string
 	 */
-	private $table;
+	protected $and = true;
 
 	/**
-	 * WHERE/OR/AND Collection
+	 * Database class
 	 *
-	 * @var array
+	 * @var \SmartPDO\Interfaces\Database
 	 */
-	private $where = array ();
+	protected $db;
 
 	/**
-	 * FunctionDescription
+	 * Holds the parameter set for building querys
+	 *
+	 * @var \SmartPDO\Parameters
+	 */
+	protected $parameters;
+
+	/**
+	 * Number of times a OR should be placed
+	 *
+	 * @var integer
+	 */
+	protected $ors = 0;
+
+	/**
+	 * Requestes table name without prefix
+	 *
+	 * @var string
+	 */
+	protected $tableName;
+
+	/**
+	 * WHERE Handler
 	 *
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
 	 * @param \SmartPDO\Interfaces\Database $db
 	 *        	SmartPDO Database Object
-	 */
-	public function __Construct(\SmartPDO\Interfaces\Database $db, $table) {
-		$this->db = $db;
-		$this->table = $table;
-	}
-
-	/**
-	 * Get the tablename as string, Master, (prefix)table
-	 *
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 *
 	 * @param string $table
-	 *        	Get the table name: Master/(prefix)table
-	 * @throws \Exception
-	 * @return string
+	 *        	Full table name
 	 */
-	private function _getTableName($table = null) {
-		if ($table == NULL) {
-			return $this->table;
-		} else if (in_array ( $this->db->getPrefix () . $table, array_keys ( $this->db->getTables () ) )) {
-			return $this->db->getPrefix () . $table;
-		} else {
-			Throw new \Exception ( "Table '$table' does not exist, or is not available" );
-		}
+	function __Construct(\SmartPDO\Interfaces\Database $db, $table) {
+		$this->parameters = new \SmartPDO\Parameters ( $db->getTables () );
+
+		// Store parameters
+		$this->parameters->registerPrefix ( $db->getPrefix () );
+		$this->parameters->registerTable ( $table );
+		$this->parameters->registerCommand ( "SELECT" );
+
+		// Store SmartPDO ( is interface )
+		$this->db = $db;
+
+		// Store table name without prefix
+		$this->tableName = substr ( $table, strlen ( $db->getPrefix () ) );
 	}
 
 	/**
 	 * add (AND) BETWEEN
 	 *
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 * @version 1
 	 * @param string $column
 	 *        	table column
 	 * @param double|int|\DateTime|string $start
@@ -78,14 +81,13 @@ class Where {
 	 *        	Whether is must be in the list or not
 	 * @param string $table
 	 *        	Target table, NULL for root table
-	 *
-	 * @return \SmartPDO\Where
+	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function between($column, $start, $stop, $not = false, $table = null) {
 		// Get tablename
-		$tbl = $this->_getTableName ( $table );
+		$tbl = $this->db->getTableName ( $table != null ? $table : $this->tableName );
 		// Register dataset WHERE BETWEEN
-		$this->parameters->registerWhereBetween ( $column, $start, $stop, $not, $tbl, $this->ors === 0 );
+		$this->parameters->registerWhereBetween ( $column, $start, $stop, $not, $tbl, $this->ors == 0 );
 		// Decrease OR counter if possible
 		if ($this->ors > 0) {
 			$this->ors --;

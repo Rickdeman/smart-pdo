@@ -82,6 +82,36 @@ interface Table {
 	public function execute();
 
 	/**
+	 * Return the PDO object
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return \SmartPDO\Interfaces\Database
+	 */
+	public function getDb();
+
+	/**
+	 * Return the root table
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return string
+	 */
+	public function getTable();
+
+	/**
+	 * Return all available tables for querys
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return string[]
+	 */
+	public function getTables();
+
+	/**
 	 * create a AND/OR group
 	 *
 	 * @version 1
@@ -262,6 +292,16 @@ interface Table {
 	 * @return \SmartPDO\MySQL\Table
 	 */
 	public function setOr($times = 1);
+
+	/**
+	 * Set the WHERE clausule (
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @param \SmartPDO\Where $where
+	 */
+	public function setWhere(\SmartPDO\Where $where);
 
 	/**
 	 * Create an UPDATE query

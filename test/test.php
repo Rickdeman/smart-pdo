@@ -1,8 +1,5 @@
 <?php
-use SmartPDO\Config;
-
 require_once __DIR__ . '/../vendor/autoload.php';
-
 /**
  * SmartPDO MySQL handler
  *
@@ -10,11 +7,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
  */
 $MySQL = new \SmartPDO\MySQL ( "smartpdo", "PvZZMGeeAp0UPtC4", "smartpdo", "spdo" );
 
-Config::$readOnly = true;
-
-$where = new \SmartPDO\Where ( $MySQL, 'customer' );
-print_r ( $where );
-diE ();
 /**
  *
  * @var \SmartPDO\MySQL\Table $table

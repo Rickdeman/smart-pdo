@@ -30,6 +30,13 @@ class Parameters {
 	private $command = 'SELECT';
 
 	/**
+	 * Storage for all MySQL tables with columns
+	 *
+	 * @var array
+	 */
+	private $dbTables = null;
+
+	/**
 	 * Placeholder for the DISTINCT flag
 	 *
 	 * @var bool
@@ -63,13 +70,6 @@ class Parameters {
 	 * @var \SmartPDO\Parameters\Limit
 	 */
 	private $limit = null;
-
-	/**
-	 * Storage for all MySQL tables with columns
-	 *
-	 * @var array
-	 */
-	private $mysqlTables = null;
 
 	/**
 	 * Placeholder for each ORDER
@@ -132,7 +132,7 @@ class Parameters {
 	 * @param array $tables
 	 */
 	function __Construct(array $tables) {
-		$this->mysqlTables = $tables;
+		$this->dbTables = $tables;
 	}
 
 	/**
@@ -148,7 +148,7 @@ class Parameters {
 	 */
 	public function columnExists($table, $column) {
 		try {
-			return (in_array ( $column, explode ( ',', $this->mysqlTables [$table] ) ));
+			return (in_array ( $column, explode ( ',', $this->dbTables [$table] ) ));
 		} catch ( \Exception $e ) {
 			return false;
 		}
@@ -219,6 +219,9 @@ class Parameters {
 	 */
 	public function getLimit() {
 		return $this->limit;
+	}
+	public function getDbTables() {
+		return $this->dbTables;
 	}
 
 	/**
@@ -662,8 +665,7 @@ class Parameters {
 			$allowed = true;
 		}
 		// Check both: DateTime
-		if ((is_object ( $start ) && is_object ( $stop )) && (get_class (
-				$start ) == "DateTime" && get_class ( $stop ) == "DateTime")) {
+		if ((is_object ( $start ) && is_object ( $stop )) && (get_class ( $start ) == "DateTime" && get_class ( $stop ) == "DateTime")) {
 			$allowed = true;
 		}
 		if (is_string ( $start ) && is_string ( $stop )) {
@@ -761,7 +763,7 @@ class Parameters {
 	 * @return boolean
 	 */
 	public function tableExists($table) {
-		return in_array ( $table, array_keys ( $this->mysqlTables ) );
+		return in_array ( $table, array_keys ( $this->dbTables ) );
 	}
 
 	/**

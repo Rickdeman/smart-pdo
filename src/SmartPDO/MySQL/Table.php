@@ -158,6 +158,42 @@ class Table implements \SmartPDO\Interfaces\Table {
 	 *
 	 * {@inheritdoc}
 	 *
+	 * @see \SmartPDO\Interfaces\Table::getDb()
+	 *
+	 * @return \SmartPDO\Interfaces\Database
+	 */
+	public function getDb() {
+		return $this->mysql;
+	}
+
+	/**
+	 *
+	 * {@inheritdoc}
+	 *
+	 * @see \SmartPDO\Interfaces\Table::getTable()
+	 *
+	 * @return string
+	 */
+	public function getTable() {
+		return $this->tableName;
+	}
+
+	/**
+	 * Return all available tables for querys
+	 *
+	 * @version 1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return string[]
+	 */
+	public function getTables() {
+		return $this->parameters->getTables ();
+	}
+
+	/**
+	 *
+	 * {@inheritdoc}
+	 *
 	 * @param bool $and
 	 *        	True for an AND group otherwise OR
 	 */
@@ -428,6 +464,8 @@ class Table implements \SmartPDO\Interfaces\Table {
 		$this->ors = $times;
 		// Return current object
 		return $this;
+	}
+	public function setWhere(\SmartPDO\Where $where) {
 	}
 
 	/**

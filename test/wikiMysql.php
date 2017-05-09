@@ -7,16 +7,14 @@
 
 <title>SmartPdo Test</title>
 <!-- Bootstrap -->
-<link href="https://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://getbootstrap.com/assets/css/docs.min.css"
+<link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="http://getbootstrap.com/assets/css/docs.min.css"
 	rel="stylesheet">
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"
 	type="text/javascript"></script>
-<script src="../vendor/highlight.pack.js" type="text/javascript"></script>
-<link href="../vendor/styles/tomorrow.css" rel="stylesheet">
 
 
 </head>
@@ -119,8 +117,7 @@ foreach ( $methods as $m => $v ) {
 			</div>
 		</div>
 	</div>
-	<script>hljs.initHighlightingOnLoad();</script>
-	<script src=https://getbootstrap.com/dist/js/bootstrap.min.js></script>
-	<script src=https://getbootstrap.com/assets/js/docs.min.js></script>
+	<script src=http://getbootstrap.com/dist/js/bootstrap.min.js></script>
+	<script src=http://getbootstrap.com/assets/js/docs.min.js></script>
 </body>
 </html>
