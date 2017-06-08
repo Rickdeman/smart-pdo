@@ -167,7 +167,7 @@ class Rows implements \SmartPDO\Interfaces\Rows {
 				$sth = $this->mysql->pdo->prepare ( $query );
 				$sth->execute ( $values );
 
-				$this->tableRows = intval ( $sth->rowCount () );
+				$this->tableRows = intval ( $sth->fetch () ['TABLE_ROWS'] );
 			} catch ( \Exception $ex ) {
 				// Something when wrong...
 				echo $query . PHP_EOL;
