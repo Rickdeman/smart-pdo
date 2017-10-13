@@ -7,109 +7,140 @@ namespace SmartPDO\Parameters;
 
 /**
  * SmartPdo Parameter JOIN
- * 
+ *
  * @version 1
  * @author Rick de Man <rick@rickdeman.nl>
  */
-class Join {
+class Join
+{
 
-	/**
-	 * Source columns
-	 * 
-	 * @var string
-	 */
-	private $sourceColumn;
+    /**
+     * Source columns
+     *
+     * @var string
+     */
+    private $columnLeft;
 
-	/**
-	 * Source table
-	 * 
-	 * @var string
-	 */
-	private $sourceTable;
+    /**
+     * target columns
+     *
+     * @var string
+     */
+    private $columnRight;
 
-	/**
-	 * target columns
-	 * 
-	 * @var string
-	 */
-	private $targetColumn;
+    /**
+     * Comparison symbol
+     *
+     * @var string
+     */
+    private $comparison;
 
-	/**
-	 * target table
-	 * 
-	 * @var string
-	 */
-	private $targetTable;
+    /**
+     * Source table
+     *
+     * @var string
+     */
+    private $tableLeft;
 
-	/**
-	 * Type of JOIN
-	 * 
-	 * @var string
-	 */
-	private $typeJoin;
+    /**
+     * target table
+     *
+     * @var string
+     */
+    private $tableRight;
 
-	/**
-	 * JOIN parameter initialiser
-	 * 
-	 * @version 1
-	 * @author Rick de Man <rick@rickdeman.nl>
-	 * @param string $type
-	 *        	Type of join to be used
-	 * @param string $sourceTable
-	 *        	Fully qualified source table name including prefix
-	 * @param string $sourceColumn
-	 *        	Fully qualified source table column
-	 * @param string $targetTable
-	 *        	Fully qualified target table name including prefix
-	 * @param string $targetColumn
-	 *        	Fully qualified target table column
-	 * @throws \Exception
-	 */
-	function __construct($type, $sourceTable, $sourceColumn, $targetTable, $targetColumn) {
-		$this->typeJoin = $type;
-		$this->sourceTable = $sourceTable;
-		$this->sourceColumn = $sourceColumn;
-		$this->targetTable = $targetTable;
-		$this->targetColumn = $targetColumn;
-	}
+    /**
+     * Type of JOIN
+     *
+     * @var string
+     */
+    private $typeJoin;
 
-	/**
-	 *
-	 * @return string
-	 */
-	public function getSourceColumn() {
-		return $this->sourceColumn;
-	}
+    /**
+     * JOIN parameter initialiser
+     *
+     * @version 1
+     * @author Rick de Man <rick@rickdeman.nl>
+     * @param string $type
+     *            Type of join to be used
+     * @param string $tableLeft
+     *            Fully qualified source table name including prefix
+     * @param string $columnLeft
+     *            Fully qualified source table column
+     * @param string $tableRight
+     *            Fully qualified target table name including prefix
+     * @param string $columnRight
+     *            Fully qualified target table column
+     * @param string $comparison
+     *            Comparision action see compareList for more info
+     */
+    function __construct(string $type, string $tableLeft, string $columnLeft, string $tableRight, string $columnRight, string $comparison = '=')
+    {
+        $this->typeJoin = $type;
+        $this->tableLeft = $tableLeft;
+        $this->columnLeft = $columnLeft;
+        $this->tableRight = $tableRight;
+        $this->columnRight = $columnRight;
+        $this->comparison = $comparison;
+    }
 
-	/**
-	 *
-	 * @return string
-	 */
-	public function getSourceTable() {
-		return $this->sourceTable;
-	}
+    /**
+     * Return the Column which belongs to the left table
+     *
+     * @return string
+     */
+    public function getColumnLeft()
+    {
+        return $this->columnLeft;
+    }
 
-	/**
-	 *
-	 * @return string
-	 */
-	public function getTargetColumn() {
-		return $this->targetColumn;
-	}
+    /**
+     * Return the Column which belongs to the right table
+     *
+     * @return string
+     */
+    public function getColumnRight()
+    {
+        return $this->columnRight;
+    }
 
-	/**
-	 *
-	 * @return string
-	 */
-	public function getTargetTable() {
-		return $this->targetTable;
-	}
+    /**
+     * Returns the Comparison symbol
+     *
+     * @return string
+     */
+    public function getComparison()
+    {
+        return $this->comparison;
+    }
 
-	/**
-	 *
-	 * @return string
-	 */
-	public function getType() {
-		return $this->typeJoin;
-	}
+    /**
+     * Return the left table
+     *
+     * @return string
+     */
+    public function getTableLeft()
+    {
+        return $this->tableLeft;
+    }
+
+    /**
+     * Return the right table
+     *
+     * @return string
+     */
+    public function getTableRight()
+    {
+        return $this->tableRight;
+    }
+
+    /**
+     * Returns the typeof JOIN
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->typeJoin;
+    }
 }

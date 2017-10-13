@@ -4,7 +4,7 @@ $desc = "Auto Fill";
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */
-$rows = $MySQL->getTable ( 'customer' )->innerJoin ( 'licences' )->execute ();
+$rows = $MySQL->getTable ( 'licences' )->innerJoin3 ( 'customer' )->execute ();
 
 echo $rows->rowCount () . " - ";
 print_r ( $rows->getRows () );

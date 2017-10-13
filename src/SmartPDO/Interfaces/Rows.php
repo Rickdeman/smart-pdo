@@ -18,6 +18,7 @@ interface Rows {
 	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
+	 * 
 	 * @param \SmartPDO\Interfaces\Database $db
 	 *        	Mysql handler
 	 * @param \SmartPDO\Parameters $parameters
@@ -30,6 +31,7 @@ interface Rows {
 	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
+	 * 
 	 * @return null|int|string
 	 */
 	function getInsertedID();
@@ -39,6 +41,7 @@ interface Rows {
 	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
+	 * 
 	 * @return string
 	 */
 	function getQuery();
@@ -48,6 +51,7 @@ interface Rows {
 	 * 
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
+	 * 
 	 * @return array
 	 */
 	function getRows();

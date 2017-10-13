@@ -4,7 +4,7 @@ $desc = "In with JOIN";
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */
-$rows = $MySQL->getTable ( 'customer' )->innerJoin ( 'licences' )->in ( 'ID', array (
+$rows = $MySQL->getTable ( 'licences' )->innerJoin3 ( 'customer' )->in ( 'ID', array (
 		1,
 		3 
 ), false, 'customer' )->execute ();

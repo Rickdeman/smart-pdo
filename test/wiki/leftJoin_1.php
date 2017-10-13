@@ -4,7 +4,7 @@ $desc = "half defined";
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */
-$rows = $MySQL->getTable ( 'customer' )->leftJoin ( 'licences', 'customerID' )->execute ();
+$rows = $MySQL->getTable ( 'licences' )->leftJoin2 ( 'customerID', 'customer' )->execute ();
 
 echo $rows->rowCount () . " - ";
 print_r ( $rows->getRows () );

@@ -13,7 +13,7 @@ $desc = "MultiColumns with Join";
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */
-$rows = $MySQL->getTable ( 'customer' )->columns ( "ID", "licences.customerID" )->innerJoin ( 'licences' )->execute ();
+$rows = $MySQL->getTable ( 'licences' )->columns ( "ID", "licences.customerID" )->innerJoin3 ( 'customer' )->execute ();
 
 echo $rows->rowCount () . " - ";
 print_r ( $rows->getRows () );

@@ -4,7 +4,7 @@ $desc = "OrderBY in JOIN";
  *
  * @var \SmartPDO\MySQL\Table $table
  */
-$table = $MySQL->getTable ( 'customer' )->innerJoin ( 'licences' );
+$table = $MySQL->getTable ( 'licences' )->innerJoin3 ( 'customer' );
 $table->orderBy ( "ID" )->orderBy ( "ID", false, 'licences' );
 
 /**

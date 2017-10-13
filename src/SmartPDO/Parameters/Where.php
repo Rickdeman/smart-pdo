@@ -17,7 +17,7 @@ class Where extends \SmartPDO\Parameters\WhereLogic {
 	/**
 	 * Comparision action
 	 *
-	 * @var bool|string
+	 * @var string
 	 */
 	private $comparison;
 
@@ -46,7 +46,7 @@ class Where extends \SmartPDO\Parameters\WhereLogic {
 	 * @param string $and
 	 *        	AND condition if true, else OR
 	 */
-	function __Construct($table, $column, $comparison, $value, $and) {
+	function __Construct(string $table, string $column, string $comparison, $value, bool $and) {
 		$this->table = $table;
 		$this->column = $column;
 		$this->comparison = $comparison;
@@ -60,7 +60,7 @@ class Where extends \SmartPDO\Parameters\WhereLogic {
 	 * @version 1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
-	 * @return boolean|string
+	 * @return string
 	 */
 	public function getComparison() {
 		return $this->comparison;

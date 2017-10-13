@@ -4,7 +4,7 @@ $desc = "with JOIN";
  *
  * @var \SmartPDO\MySQL\Table\Rows $rows
  */
-$rows = $MySQL->getTable ( 'customer' )->innerJoin ( 'licences' )->groupBy ( 'category' )->execute ();
+$rows = $MySQL->getTable ( 'licences' )->innerJoin3 ( 'customer' )->groupBy ( 'category', 'customer' )->execute ();
 
 echo sprintf ( "%s/%s%s", $rows->rowCount (), $rows->getTotalRows (), PHP_EOL );
 print_r ( $rows->getRows () );
