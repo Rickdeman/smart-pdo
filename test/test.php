@@ -28,7 +28,7 @@ $table->innerJoin ( 'licences', 'customerID', 'customer', 'ID' );
 /**/
 
 \SmartPDO\Config::$readOnly = true;
-$MySQL->getTable ( 'licences' )->update()->set('expires', null)->limit(1)->execute()->getRows();
-var_dump( json_encode($MySQL->getTable ( 'licences' )->innerJoin ( 'licences', 'customerID', 'customer', 'ID' )->execute()->getRows()) );
-var_dump( json_encode($MySQL->getTable ( 'licences' )->innerJoin2 ( 'customerID', 'customer' )->execute()->getRows()) );
-var_dump( json_encode($MySQL->getTable ( 'licences' )->innerJoin3 ( 'customer' )->execute()->getRows()) );
+$data = $MySQL->getTable ( 'customer' );
+$data->where('templateID', 0);
+
+print_r( $data->execute()->getRows() );

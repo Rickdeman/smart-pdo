@@ -269,7 +269,7 @@ class Rows implements \SmartPDO\Interfaces\Rows
             return "";
         }
         // Check if INSERTS is not null and has items
-        if ($param->getInsert() == null || count($param->getInsert()) == 0) {
+        if ($param->getInsert() === null || count($param->getInsert()) == 0) {
             // Nothing to be inserted
             return "";
         }
@@ -313,7 +313,7 @@ class Rows implements \SmartPDO\Interfaces\Rows
         // Result variable
         $result = "";
         // Check if ORDER BY is not null and has items
-        if ($groups == null || count($groups) == 0) {
+        if ($groups === null || count($groups) == 0) {
             // No ordering
             return "";
         }
@@ -389,7 +389,7 @@ class Rows implements \SmartPDO\Interfaces\Rows
             return "";
         }
         // Check if JOINS is not null and has items
-        if ($param->getJoins() == null || count($param->getJoins()) == 0) {
+        if ($param->getJoins() === null || count($param->getJoins()) == 0) {
             // No inner joins defined
             return "";
         }
@@ -432,7 +432,7 @@ class Rows implements \SmartPDO\Interfaces\Rows
         // Get parameter limit
         $limit = $param->getLimit();
         // Check if limit is defined
-        if ($limit == null) {
+        if ($limit === null) {
             return "";
         }
         // Determine if start posisition can be used or is 0
@@ -471,7 +471,7 @@ class Rows implements \SmartPDO\Interfaces\Rows
         // Load ORDERS
         $orders = $param->getOrder();
         // Check if ORDER BY is not null and has items
-        if ($orders == null || count($orders) == 0) {
+        if ($orders === null || count($orders) == 0) {
             // No ordering
             return "";
         }
@@ -640,7 +640,7 @@ class Rows implements \SmartPDO\Interfaces\Rows
             return "";
         }
         // Check if SET's is not null and has items
-        if ($param->getSet() == null || count($param->getSet()) == 0) {
+        if ($param->getSet() === null || count($param->getSet()) == 0) {
             // Nothing to be inserted
             $message = "Update requires values in order to UPDATE, none given";
             throw new \Exception($message);
@@ -687,7 +687,7 @@ class Rows implements \SmartPDO\Interfaces\Rows
         // Create the result variable
         $result = sprintf("WHERE %s\t( ", PHP_EOL);
         // Check if WHERE is not null and has items
-        if ($param->getWhere() == null || count($param->getWhere()) == 0) {
+        if ($param->getWhere() === null || count($param->getWhere()) == 0) {
             // Load all results
             return "WHERE 1" . PHP_EOL;
         }
@@ -887,7 +887,7 @@ class Rows implements \SmartPDO\Interfaces\Rows
         }
         
         // Check if value is NULL
-        if ($value == NULL) {
+        if ($value === NULL) {
             // IS NULL syntax
             $result .= sprintf("`%s` IS %sNULL", $column, $comparison === true ? "" : "NOT ");
         } else {

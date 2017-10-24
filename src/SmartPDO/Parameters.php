@@ -691,7 +691,7 @@ class Parameters
         // Check if table & column exist
         $this->tableColumnCheck($table, $column);
         // if value = NULL > bool else comparison operator
-        $comp = $value != NULL ? $comparison : $comparison === "=";
+        $comp = $value !== NULL ? $comparison : $comparison === "=";
         // Register Where command: COMMAND, TABLE, COMPARISION/BOOL(IS NULL), VALUE
         $this->where[] = new \SmartPDO\Parameters\Where($table, $column, $comp, $value, $and);
     }
