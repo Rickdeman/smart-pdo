@@ -889,7 +889,7 @@ class Rows implements \SmartPDO\Interfaces\Rows
         // Check if value is NULL
         if ($value === NULL) {
             // IS NULL syntax
-            $result .= sprintf("`%s` IS %sNULL", $column, $comparison === true ? "" : "NOT ");
+            $result .= sprintf("`%s` IS %sNULL", $column, $comparison === "=" ? "" : "NOT ");
         } else {
             // Comparison syntax
             $result .= sprintf("`%s` %s ?", $column, $comparison);
