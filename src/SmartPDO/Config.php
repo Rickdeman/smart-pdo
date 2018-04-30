@@ -78,6 +78,16 @@ class Config
         "LEFT JOIN",
         "RIGHT JOIN"
     );
+    
+    /**
+     * Available MOD types
+     *
+     * @var array
+     */
+    const ModList = array(
+    	"+",
+    	"-",
+    );
 
     /**
      * Flag for DELETE permissions

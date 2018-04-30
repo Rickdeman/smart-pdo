@@ -7,28 +7,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
  */
 $MySQL = new \SmartPDO\MySQL ( "smartpdo", "PvZZMGeeAp0UPtC4", "smartpdo", "spdo" );
 
-/**
- *
- * @var \SmartPDO\MySQL\Table $table
- */
-$table = $MySQL->getTable ( 'licences' );
-$table->innerJoin ( 'licences', 'customerID', 'customer', 'ID' );
-//$table->innerJoin2 ( 'customerID', 'customer' );
-//$table->innerJoin3 ( 'customer' );
-/**
- *
- * @var \SmartPDO\MySQL\Table\Rows $rows
- */
-//$rows = $table->execute ();
 
-//print_r ( $rows->getQuery () );
-//echo PHP_EOL;
+$inc = $MySQL->getTable('spdo_count')->update()->where('ID', 1)->decrement('count', 5)->set('count2', 15);
 
-//print_r($rows->getRows());
-/**/
-
-\SmartPDO\Config::$readOnly = true;
-$data = $MySQL->getTable ( 'customer' );
-$data->where('templateID', 0);
-
-print_r( $data->execute()->getRows() );
+print_r($inc->execute()->getRows());
+var_dump(__LINE__);

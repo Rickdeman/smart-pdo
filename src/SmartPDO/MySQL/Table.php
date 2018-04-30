@@ -121,6 +121,27 @@ class Table implements \SmartPDO\Interfaces\Table
         return $this;
     }
 
+    
+    /**
+     * {@inheritDoc}
+     * 
+     * @param string $column
+     *            Column name
+     * @param float $dec
+     * 			  value to be decremented by
+     * @param string $table
+     *            Target table, NULL for root table
+     *
+     * @return \SmartPDO\MySQL\Table
+     */
+    public function decrement(string $columns, float $dec = 1, string $table = null){
+    	
+    	// Get tablename
+    	$tbl = $this->mysql->getTableName($table != null ? $table : $this->tableName);
+    	$this->parameters->registerMod($columns, $tbl, $dec, '-');
+    	return $this;
+    }
+    
     /**
      *
      * {@inheritdoc}
@@ -262,6 +283,25 @@ class Table implements \SmartPDO\Interfaces\Table
         }
         // Return current object
         return $this;
+    }
+    
+    /**
+     * {@inheritdoc}
+     *
+     * @param string $column
+     *            Column name
+     * @param float $inc
+     * 			  value to be incremented by
+     * @param string $table
+     *            Target table, NULL for root table
+     *
+     * @return \SmartPDO\MySQL\Table
+     */
+    public function increment(string $columns, float $inc = 1, string $table = null){
+    	// Get tablename
+    	$tbl = $this->mysql->getTableName($table != null ? $table : $this->tableName);
+    	$this->parameters->registerMod($columns, $tbl, $inc, '+');
+    	return $this;
     }
 
     /**

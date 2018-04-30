@@ -276,7 +276,7 @@ class Parameters
      * @version 1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
-     * @return array
+     * @return \SmartPDO\Parameters\Set[]
      */
     public function getSet()
     {
@@ -547,6 +547,22 @@ class Parameters
         $this->limit = new \SmartPDO\Parameters\Limit($items, $start);
     }
 
+    public function registerMod(string $column, string $table, float $mod, string $operator ){
+    	// Check if function is allowed within current command
+    	if ((Config::PDO_UPDATE & Config::commandList[$this->command]) == 0) {
+    		throw new \Exception("Cannot register 'MOD' with current command: " . $this->command);
+    	}
+    	// Validate comparison symbol
+    	if (! in_array($operator, Config::ModList)) {
+    		throw new \Exception("MOD type: '" . $operator . "' is not allowed. see ModList for more info");
+    	}
+    	if (! ($mod >= 0)) {
+    		throw new \Exception("items value must positive!");
+    	}
+    	// Add MOD set parameters
+    	$this->set[] = new Parameters\Mod($column, $operator, $mod);
+    }
+    
     /**
      * Register an ORDER BY
      *
@@ -632,7 +648,7 @@ class Parameters
         if (! is_array($this->set)) {
             $this->set = array();
         }
-        $this->set[$column] = $value;
+        $this->set[] = new Parameters\Set($column, $value) ;
     }
 
     /**

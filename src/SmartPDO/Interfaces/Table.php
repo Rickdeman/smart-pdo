@@ -62,6 +62,20 @@ interface Table
     public function columns(string ...$columns);
 
     /**
+     * Add an Ddecrement value setter
+     *
+     * @param string $column
+     *            Column name
+     * @param float $dec
+     * 			  value to be decremented by
+     * @param string $table
+     *            Target table, NULL for root table
+     *
+     * @return \SmartPDO\Interfaces\Table
+     */
+    public function decrement(string $columns, float $dec = 1, string $table = null);
+    
+    /**
      * Creates a DELETE query
      *
      * @version 1
@@ -164,6 +178,20 @@ interface Table
      */
     public function in(string $column, array $list, bool $not = false, string $table = null);
 
+    /**
+     * Add an Incremental value setter
+     * 
+     * @param string $column
+     *            Column name
+     * @param float $inc
+     * 			  value to be incremented by
+     * @param string $table
+     *            Target table, NULL for root table
+     *            
+     * @return \SmartPDO\Interfaces\Table
+     */
+    public function increment(string $columns, float $inc = 1, string $table = null);
+    
     /**
      * Add INNER JOIN
      *

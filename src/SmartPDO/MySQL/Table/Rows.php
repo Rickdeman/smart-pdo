@@ -137,6 +137,7 @@ class Rows implements \SmartPDO\Interfaces\Rows
         $this->sth = $this->mysql->pdo->prepare($query);
         // Execute with values
         try {
+
             // Check if the database is readonly and WRITE permissions are required
             if (Config::$readOnly == true && (Config::PDO_WRITE & Config::commandList[$param->getCommand()]) != 0) {
                 // Provide fake ID's
@@ -645,18 +646,49 @@ class Rows implements \SmartPDO\Interfaces\Rows
             $message = "Update requires values in order to UPDATE, none given";
             throw new \Exception($message);
         }
-        // Load all columns ( keys )
-        $pcolumns = array_keys($param->getSet());
-        // Dynamicly add ? for prepared statement
-        $pvalues = array_fill(0, count($param->getSet()), "?");
+        $result = sprintf( "UPDATE `%s` SET" . PHP_EOL . "\t", $param->getTable());
+        // Create empty Add Values
+        $addValues = array();
+        // Loop throuhg all WHERE parameters
+        $parameters = $param->getSet();
+        $last = end($parameters);
+        foreach ($parameters as $s) {
+        	$result .= sprintf("`%s` = ", $s->getColumn());
+
+        	/**
+        	 *
+        	 * @var \SmartPDO\Parameters\WhereLogic $w
+        	 */
+        	switch (strtolower(get_class($s))) {
+        		
+        		case 'smartpdo\parameters\set':
+        			$result .= "?";
+        			break;
+        			
+        		case 'smartpdo\parameters\mod':
+        			/**
+        			 * @var \SmartPDO\Parameters\Mod $s
+        			 */
+        			$result .= sprintf("`%s` %s ?", $s->getColumn(), $s->getOperator() );
+        			break;
+        			
+        		default:
+        			throw new \Exception(get_class($s) . ' is not configured');
+        			break;
+        	}
+        	if( $s!=$last){
+        		$result .= "," . PHP_EOL . "\t";        		
+        	}
+        	
+        	$addValues[] = $s->getValue();
+
+        }
         // Add all values for the prepared statement
-        $values = array_merge($values, array_values($param->getSet()));
-        // Return result
-        return sprintf(
-            "UPDATE `%s` SET" . PHP_EOL . "\t`%s` = ?",
-            $param->getTable(),
-            implode(sprintf('` = ?,%s`', PHP_EOL . "\t"), $pcolumns),
-            implode(", ", $pvalues)) . PHP_EOL;
+        $values = array_merge($values, $addValues);
+        
+        $result .= PHP_EOL;
+        return $result;
+            
     }
 
     /**
