@@ -1,4 +1,5 @@
 <?php
+
 namespace SmartPDO\Interfaces;
 
 interface TableColumns

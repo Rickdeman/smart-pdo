@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File: TableColumn.php
  */
