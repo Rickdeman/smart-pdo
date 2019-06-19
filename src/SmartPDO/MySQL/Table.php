@@ -8,8 +8,8 @@ namespace SmartPDO\MySQL;
 /**
  * MySQL Table handler
  *
+ * @version 1.1
  * @author Rick de Man <rick@rickdeman.nl>
- * @version 1
  */
 class Table implements \SmartPDO\Interfaces\Table
 {
@@ -17,6 +17,9 @@ class Table implements \SmartPDO\Interfaces\Table
     /**
      * Flag for AND/OR, must be reset after each use!
      *
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     * 
      * @var string
      */
     private $and = true;
@@ -24,13 +27,19 @@ class Table implements \SmartPDO\Interfaces\Table
     /**
      * Mysql class
      *
-     * @var \SmartPDO\MySQL
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     * 
+     * @var \SmartPDO\Interfaces\Database
      */
-    private $mysql;
+    private $db;
 
     /**
      * Number of times a OR should be placed
      *
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     * 
      * @var integer
      */
     private $ors = 0;
@@ -38,6 +47,9 @@ class Table implements \SmartPDO\Interfaces\Table
     /**
      * Holds the parameter set for building querys
      *
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     * 
      * @var \SmartPDO\Parameters
      */
     private $parameters;
@@ -45,6 +57,9 @@ class Table implements \SmartPDO\Interfaces\Table
     /**
      * Requestes table name without prefix
      *
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     * 
      * @var string
      */
     private $tableName;
@@ -52,51 +67,48 @@ class Table implements \SmartPDO\Interfaces\Table
     /**
      * Contructor for the MySQL Table handler
      *
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
-     * @version 1
-     * @param \SmartPDO\Interfaces\Database $db
+     * 
+     * @param \SmartPDO\MySQL $db
      *            SmartPDO Database Object
      * @param string $table
      *            Full table name
      */
-    function __Construct(\SmartPDO\Interfaces\Database $db, string $table)
+    function __construct( \SmartPDO\Interfaces\Database $db, string $table)
     {
-        $this->parameters = new \SmartPDO\Parameters($db->getTables());
-        
+    	if(!get_class($db) == "SmartPDO\MySQL"){
+    		throw new \Exception("Wrong Database type provided! expecterd : SmartPDO\MySQL");
+    	}
         // Store parameters
-        $this->parameters->registerPrefix($db->getPrefix());
-        $this->parameters->registerTable($table);
-        $this->parameters->registerCommand("SELECT");
-        
+    	$this->parameters = new \SmartPDO\Parameters($db, $table);
         // Store SmartPDO ( is interface )
-        $this->mysql = $db;
-        
+        $this->db = $db;
         // Store table name without prefix
-        $this->tableName = substr($table, strlen($db->getPrefix()));
+    	$this->tableName = $this->parameters->getTable();
     }
 
     /**
-     *
      * {@inheritdoc}
+     * 
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     * 
+     * @see \SmartPDO\Interfaces\Table::between()
      *
-     * @param string $column
-     *            table column
-     * @param double|int|\DateTime|string $start
-     *            Start value
-     * @param double|int|\DateTime|string $stop
-     *            End value
-     * @param bool $not
-     *            Whether is must be in the list or not
-     * @param string $table
-     *            Target table, NULL for root table
      * @return \SmartPDO\MySQL\Table
      */
     public function between(string $column, $start, $stop, bool $not = false, string $table = null)
     {
-        // Get tablename
-        $tbl = $this->mysql->getTableName($table != null ? $table : $this->tableName);
         // Register dataset WHERE BETWEEN
-        $this->parameters->registerWhereBetween($column, $start, $stop, $not, $tbl, $this->ors == 0);
+        $this->parameters->registerWhereBetween(
+        	$table != null ? $table : $this->tableName,
+        	$column,
+        	$start, 
+        	$stop, 
+        	$not, 
+        	$this->ors == 0
+        );
         // Decrease OR counter if possible
         if ($this->ors > 0) {
             $this->ors --;
@@ -106,11 +118,12 @@ class Table implements \SmartPDO\Interfaces\Table
     }
 
     /**
-     *
      * {@inheritdoc}
-     *
-     * @param string $columns
-     *            Columns to be shown, fully named when using JOIN(s)
+     * @see \SmartPDO\Interfaces\Table::columns()
+     * 
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     * 
      * @return \SmartPDO\MySQL\Table
      */
     public function columns(string ...$columns)
@@ -120,31 +133,30 @@ class Table implements \SmartPDO\Interfaces\Table
         // Return current object
         return $this;
     }
-
-    
+  
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::decrement()
      * 
-     * @param string $column
-     *            Column name
-     * @param float $dec
-     * 			  value to be decremented by
-     * @param string $table
-     *            Target table, NULL for root table
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
      *
      * @return \SmartPDO\MySQL\Table
      */
-    public function decrement(string $columns, float $dec = 1, string $table = null){
-    	
-    	// Get tablename
-    	$tbl = $this->mysql->getTableName($table != null ? $table : $this->tableName);
-    	$this->parameters->registerMod($columns, $tbl, $dec, '-');
+    public function decrement(string $columns, float $dec = 1)
+    {
+    	// Register a Decrement
+    	$this->parameters->registerMod($columns, $dec, '-');
+    	// Return current object
     	return $this;
     }
     
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::delete()
+     * 
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
      *
      * @return \SmartPDO\MySQL\Table
      */
@@ -157,11 +169,13 @@ class Table implements \SmartPDO\Interfaces\Table
     }
 
     /**
-     *
      * {@inheritdoc}
-     *
      * @see \SmartPDO\Interfaces\Table::distinct()
+     * 
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
      *
+     * @return \SmartPDO\MySQL\Table
      */
     public function distinct()
     {
@@ -172,61 +186,88 @@ class Table implements \SmartPDO\Interfaces\Table
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::execute()
+     * 
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
      *
      * @return \SmartPDO\MySQL\Table\Rows
      */
     public function execute()
     {
-        return new \SmartPDO\MySQL\Table\Rows($this->mysql, $this->parameters);
+        // Execute the parameters
+        return new \SmartPDO\MySQL\Table\Rows($this->db, $this->parameters);
     }
 
     /**
-     *
      * {@inheritdoc}
-     *
+     * @see \SmartPDO\Interfaces\Table::getColumns()
+     * 
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     * 
+     * @return string[]
+     */
+    public function getColumns()
+    {
+        // Return the Columns from the parameters
+    	return $this->parameters->getColumns();
+    }
+    
+    /**
+     * {@inheritdoc}
      * @see \SmartPDO\Interfaces\Table::getDb()
+     * 
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
      *
      * @return \SmartPDO\Interfaces\Database
      */
     public function getDb()
     {
-        return $this->mysql;
+        // Return the database
+        return $this->db;
     }
 
     /**
-     *
      * {@inheritdoc}
-     *
      * @see \SmartPDO\Interfaces\Table::getTable()
+     * 
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
      *
      * @return string
      */
     public function getTable()
     {
+        // Return the Table name
         return $this->tableName;
     }
 
     /**
-     * Return all available tables for querys
-     *
-     * @version 1
+     * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::getTables()
+     * 
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @return string[]
      */
     public function getTables()
     {
+        // Returns the table  which are used
         return $this->parameters->getTables();
     }
 
     /**
-     *
      * {@inheritdoc}
-     *
-     * @param bool $and
-     *            True for an AND group otherwise OR
+     * @see \SmartPDO\Interfaces\Table::group()
+     * 
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     * 
+     * @return \SmartPDO\MySQL\Table
      */
     public function group(bool $and = false)
     {
@@ -238,45 +279,43 @@ class Table implements \SmartPDO\Interfaces\Table
     }
 
     /**
-     *
      * {@inheritdoc}
-     *
-     * @param string $column
-     *            Column to be sorted by
-     * @param string $table
-     *            Target table, NULL for root table
+     * @see \SmartPDO\Interfaces\Table::groupBy()
+     * 
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     * 
      * @return \SmartPDO\MySQL\Table
      */
     public function groupBy(string $column, string $table = null)
     {
         // Get the tablename
-        $tbl = $this->mysql->getTableName($table != null ? $table : $this->tableName);
+        $table = $this->db->getTableName($table != null ? $table : $this->tableName);
         // Register GROUP BY
-        $this->parameters->registerGroupBy($column, $tbl);
+        $this->parameters->registerGroupBy($column, $table);
         // Return current object
         return $this;
     }
 
     /**
-     *
      * {@inheritdoc}
-     *
-     * @param string $column
-     *            Column name
-     * @param array $list
-     *            (multiple) strings|numbers for WHERE IN
-     * @param bool $not
-     *            Whether is must be in the list or not
-     * @param string $table
-     *            Target table, NULL for master table
+     * @see \SmartPDO\Interfaces\Table::in()
+     * 
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     * 
      * @return \SmartPDO\MySQL\Table
      */
     public function in(string $column, array $list, bool $not = false, string $table = null)
     {
-        // Get tablename
-        $tbl = $this->mysql->getTableName($table != null ? $table : $this->tableName);
         // Register dataset WHERE IN
-        $this->parameters->registerWhereIn($column, $list, $not, $tbl, $this->ors == 0);
+        $this->parameters->registerWhereIn(
+        	$table != null ? $table : $this->tableName,
+        	$column,
+        	$list,
+        	$not,
+        	$this->ors == 0
+        );
         // Decrease OR counter if possible
         if ($this->ors > 0) {
             $this->ors --;
@@ -287,138 +326,98 @@ class Table implements \SmartPDO\Interfaces\Table
     
     /**
      * {@inheritdoc}
-     *
-     * @param string $column
-     *            Column name
-     * @param float $inc
-     * 			  value to be incremented by
-     * @param string $table
-     *            Target table, NULL for root table
-     *
+     * @see \SmartPDO\Interfaces\Table::increment()
+     * 
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     * 
      * @return \SmartPDO\MySQL\Table
      */
-    public function increment(string $columns, float $inc = 1, string $table = null){
-    	// Get tablename
-    	$tbl = $this->mysql->getTableName($table != null ? $table : $this->tableName);
-    	$this->parameters->registerMod($columns, $tbl, $inc, '+');
+    public function increment(string $columns, float $inc = 1)
+    {
+    	// Register a Inrement
+    	$this->parameters->registerMod($columns, $inc, '+');
+    	// Return current object
     	return $this;
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::innerJoin()
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
-     *        
-     * @param string $tableLeft
-     *            Source table name
-     * @param string $columnLeft
-     *            Source table column
-     * @param string $tableRight
-     *            Target table
-     * @param string $columnRight
-     *            Target table column
-     * @param string $comparison
-     *            Comparision action, when value is NULL, use = or !=
-     * @return \SmartPDO\MySQL\Table
      *
-     * @example <code>
-     *          $MySQL->getTable ( 'licences' )->innerJoin ( 'licences', 'customerID', 'customer', 'ID' ); <br>
-     *          <br>
-     *          Will result in:<br>
-     *          INNER JOIN [licences] ON [licences].[customerID] = [customer].[ID] <br>
-     *          </code>
-     *         
+     * @return \SmartPDO\MySQL\Table
      */
     public function innerJoin(string $tableLeft, string $columnLeft, string $tableRight, string $columnRight, string $comparison = '=')
     {
         // Insert new INNER JOIN dataset
         $this->parameters->registerJoin(
             "INNER JOIN",
-            $this->mysql->getTableName($tableLeft),
+            $this->db->getTableName($tableLeft),
             $columnLeft,
-            $this->mysql->getTableName($tableRight),
+            $this->db->getTableName($tableRight),
             $columnRight,
-            $comparison);
+            $comparison
+        );
         // Return current object
         return $this;
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::innerJoin2()
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
-     *        
-     * @param string $columnLeft
-     *            Source table column
-     * @param string $tableRight
-     *            Target table
-     * @param string $comparison
-     *            Comparision action, when value is NULL, use = or !=
-     * @return \SmartPDO\MySQL\Table
      *
-     * @example <code>
-     *          $MySQL->getTable ( 'licences' )->innerJoin2 ( 'customerID', 'customer' ); <br>
-     *          <br>
-     *          Will result in:<br>
-     *          INNER JOIN [licences] ON [licences].[customerID] = [customer].[ID] <br>
-     *          </code>
+     * @return \SmartPDO\MySQL\Table
      */
     public function innerJoin2(string $columnLeft, string $tableRight, string $comparison = '=')
     {
-        // Insert new INNER JOIN dataset
         $this->parameters->registerJoin(
             "INNER JOIN",
-            $this->mysql->getTableName($this->tableName),
+            $this->db->getTableName($this->tableName),
             $columnLeft,
-            $this->mysql->getTableName($tableRight),
+            $this->db->getTableName($tableRight),
             "ID",
-            $comparison);
+            $comparison
+        );
         // Return current object
         return $this;
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::innerJoin3()
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
-     *        
-     * @param string $tableRight
-     *            Target table
-     * @param string $comparison
-     *            Comparision action, when value is NULL, use = or !=
-     * @return \SmartPDO\MySQL\Table
      *
-     * @example <code>
-     *          $MySQL->getTable ( 'licences' )->innerJoin3 ( 'customer' ); <br>
-     *          <br>
-     *          Will result in:<br>
-     *          INNER JOIN [licences] ON [licences].[customerID] = [customer].[ID] <br>
-     *          </code>
-     *         
+     * @return \SmartPDO\MySQL\Table
      */
     public function innerJoin3(string $tableRight, string $comparison = '=')
     {
         // Insert new INNER JOIN dataset
         $this->parameters->registerJoin(
             "INNER JOIN",
-            $this->mysql->getTableName($this->tableName),
+            $this->db->getTableName($this->tableName),
             $tableRight . "ID",
-            $this->mysql->getTableName($tableRight),
+            $this->db->getTableName($tableRight),
             "ID",
-            $comparison);
+            $comparison
+        );
         // Return current object
         return $this;
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::insert()
+     *
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
      *
      * @return \SmartPDO\MySQL\Table
      */
@@ -431,129 +430,97 @@ class Table implements \SmartPDO\Interfaces\Table
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::leftJoin()
      *
-     * @param string $tableLeft
-     *            Source table name
-     * @param string $columnLeft
-     *            Source table column
-     * @param string $tableRight
-     *            Target table
-     * @param string $columnRight
-     *            Target table column
-     * @param string $comparison
-     *            Comparision action, when value is NULL, use = or !=
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
      * @return \SmartPDO\MySQL\Table
-     *
-     * @example <code>
-     *          $MySQL->getTable ( 'licences' )->leftJoin ( 'licences', 'customerID', 'customer', 'ID' ); <br>
-     *          <br>
-     *          Will result in:<br>
-     *          LEFT JOIN [licences] ON [licences].[customerID] = [customer].[ID] <br>
-     *          </code>
      */
     public function leftJoin(string $tableLeft, string $columnLeft, string $tableRight, string $columnRight, string $comparison = '=')
     {
         // Insert new INNER JOIN dataset
         $this->parameters->registerJoin(
             "LEFT JOIN",
-            $this->mysql->getTableName($tableLeft),
+            $this->db->getTableName($tableLeft),
             $columnLeft,
-            $this->mysql->getTableName($tableRight),
+            $this->db->getTableName($tableRight),
             $columnRight,
-            $comparison);
+            $comparison
+        );
         // Return current object
         return $this;
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::leftJoin2()
      *
-     * @param string $columnLeft
-     *            Source table column
-     * @param string $tableRight
-     *            Target table
-     * @param string $comparison
-     *            Comparision action, when value is NULL, use = or !=
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
      * @return \SmartPDO\MySQL\Table
-     *
-     * @example <code>
-     *          $MySQL->getTable ( 'licences' )->leftJoin2 ( 'customerID', 'customer' ); <br>
-     *          <br>
-     *          Will result in:<br>
-     *          LEFT JOIN [licences] ON [licences].[customerID] = [customer].[ID] <br>
-     *          </code>
      */
     public function leftJoin2(string $columnLeft, string $tableRight, string $comparison = '=')
     {
         // Insert new INNER JOIN dataset
         $this->parameters->registerJoin(
             "LEFT JOIN",
-            $this->mysql->getTableName($this->tableName),
+            $this->db->getTableName($this->tableName),
             $columnLeft,
-            $this->mysql->getTableName($tableRight),
+            $this->db->getTableName($tableRight),
             "ID",
-            $comparison);
+            $comparison
+        );
         // Return current object
         return $this;
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::leftJoin3()
      *
-     * @param string $tableRight
-     *            Target table
-     * @param string $comparison
-     *            Comparision action, when value is NULL, use = or !=
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
      * @return \SmartPDO\MySQL\Table
-     *
-     * @example <code>
-     *          $MySQL->getTable ( 'licences' )->leftJoin3 ( 'customer' ); <br>
-     *          <br>
-     *          Will result in:<br>
-     *          LEFT JOIN [licences] ON [licences].[customerID] = [customer].[ID] <br>
-     *          </code>
      */
     public function leftJoin3(string $tableRight, string $comparison = '=')
     {
         // Insert new INNER JOIN dataset
         $this->parameters->registerJoin(
             "LEFT JOIN",
-            $this->mysql->getTableName($this->tableName),
+            $this->db->getTableName($this->tableName),
             $tableRight . "ID",
-            $this->mysql->getTableName($tableRight),
+            $this->db->getTableName($tableRight),
             "ID",
-            $comparison);
+            $comparison
+        );
         // Return current object
         return $this;
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::like()
      *
-     * @param string $column
-     *            Column name
-     * @param mixed $value
-     *            Value to be compared
-     * @param bool $not
-     *            if true will change to LIKE NOT
-     * @param string|null $table
-     *            Table name, null for root table
-     * @param string $escape
-     *            Escape character, which can be changed
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
      * @return \SmartPDO\MySQL\Table
-     *
      */
     public function like(string $column, $value, bool $not = false, string $table = null, string $escape = "!")
     {
-        // Get tablename
-        $tbl = $this->mysql->getTableName($table != null ? $table : $this->tableName);
         // Register dataset WHERE LIKE
-        $this->parameters->registerWhereLike($column, $value, $not, $tbl, $escape, $this->ors == 0);
+        $this->parameters->registerWhereLike(
+        	$table != null ? $table : $this->tableName,
+        	$column,
+        	$value, 
+        	$not, 
+        	$escape, 
+        	$this->ors == 0
+        );
         // Decrease OR counter if possible
         if ($this->ors > 0) {
             $this->ors --;
@@ -563,13 +530,12 @@ class Table implements \SmartPDO\Interfaces\Table
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::limit()
      *
-     * @param int $items
-     *            The maximum amount of rows to fetch
-     * @param int $start
-     *            The start index
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
      * @return \SmartPDO\MySQL\Table
      */
     public function limit(int $items, int $start = 0)
@@ -581,130 +547,101 @@ class Table implements \SmartPDO\Interfaces\Table
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::orderBy()
      *
-     * @param string $column
-     *            Column to be sorted by
-     * @param bool $asc
-     *            True for ascending, false for descending
-     * @param string $table
-     *            Target table, NULL for master table
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
      * @return \SmartPDO\MySQL\Table
      */
     public function orderBy(string $column, bool $asc = true, string $table = null)
     {
-        $table = $this->mysql->getTableName($table != null ? $table : $this->tableName);
+        $table = $this->db->getTableName($table != null ? $table : $this->tableName);
+        // Reguster new ORDER BY
         $this->parameters->registerOrderBy($column, $asc, $table);
         // Return current object
         return $this;
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::rightJoin()
      *
-     * @param string $tableLeft
-     *            Source table name
-     * @param string $columnLeft
-     *            Source table column
-     * @param string $tableRight
-     *            Target table
-     * @param string $columnRight
-     *            Target table column
-     * @param string $comparison
-     *            Comparision action, when value is NULL, use = or !=
-     *            
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
      * @return \SmartPDO\MySQL\Table
-     *
-     * @example <code>
-     *          $MySQL->getTable ( 'licences' )->rightJoin ( 'licences', 'customerID', 'customer', 'ID' ); <br>
-     *          <br>
-     *          Will result in:<br>
-     *          RIGHT JOIN [licences] ON [licences].[customerID] = [customer].[ID] <br>
-     *          </code>
      */
     public function rightJoin(string $tableLeft, string $columnLeft, string $tableRight, string $columnRight, string $comparison = '=')
     {
         // Insert new INNER JOIN dataset
         $this->parameters->registerJoin(
             "RIGHT JOIN",
-            $this->mysql->getTableName($tableLeft),
+            $this->db->getTableName($tableLeft),
             $columnLeft,
-            $this->mysql->getTableName($tableRight),
+            $this->db->getTableName($tableRight),
             $columnRight,
-            $comparison);
+            $comparison
+        );
         // Return current object
         return $this;
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::rightJoin2()
      *
-     * @param string $columnLeft
-     *            Source table column
-     * @param string $tableRight
-     *            Target table
-     * @param string $comparison
-     *            Comparision action, when value is NULL, use = or !=
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
      * @return \SmartPDO\MySQL\Table
-     *
-     * @example <code>
-     *          $MySQL->getTable ( 'licences' )->rightJoin2 ( 'customerID', 'customer' ); <br>
-     *          <br>
-     *          Will result in:<br>
-     *          RIGHT JOIN [licences] ON [licences].[customerID] = [customer].[ID] <br>
-     *          </code>
      */
     public function rightJoin2(string $columnLeft, string $tableRight, string $comparison = '=')
     {
         // Insert new INNER JOIN dataset
         $this->parameters->registerJoin(
             "RIGHT JOIN",
-            $this->mysql->getTableName($this->tableName),
+            $this->db->getTableName($this->tableName),
             $columnLeft,
-            $this->mysql->getTableName($tableRight),
+            $this->db->getTableName($tableRight),
             "ID",
-            $comparison);
+            $comparison
+        );
         // Return current object
         return $this;
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::rightJoin3()
      *
-     * @param string $tableRight
-     *            Target table
-     * @param string $comparison
-     *            Comparision action, when value is NULL, use = or !=
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
      * @return \SmartPDO\MySQL\Table
-     *
-     * @example <code>
-     *          $MySQL->getTable ( 'licences' )->rightJoin3 ( 'customer' ); <br>
-     *          <br>
-     *          Will result in:<br>
-     *          RIGHT JOIN [licences] ON [licences].[customerID] = [customer].[ID] <br>
-     *          </code>
      */
     public function rightJoin3(string $tableRight, string $comparison = '=')
     {
         // Insert new INNER JOIN dataset
         $this->parameters->registerJoin(
             "RIGHT JOIN",
-            $this->mysql->getTableName($this->tableName),
+            $this->db->getTableName($this->tableName),
             $tableRight . "ID",
-            $this->mysql->getTableName($tableRight),
+            $this->db->getTableName($tableRight),
             "ID",
-            $comparison);
+            $comparison
+        );
         // Return current object
         return $this;
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::select()
+     *
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
      *
      * @return \SmartPDO\MySQL\Table
      */
@@ -717,14 +654,12 @@ class Table implements \SmartPDO\Interfaces\Table
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::set()
      *
-     * @param string $column
-     *            table column
-     * @param mixed $value
-     *            Value to be updated
-     *            
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
      * @return \SmartPDO\MySQL\Table
      */
     public function set(string $column, $value)
@@ -736,12 +671,12 @@ class Table implements \SmartPDO\Interfaces\Table
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::setOr()
      *
-     * @param integer $times
-     *            The number of times a OR is requested
-     *            
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
      * @return \SmartPDO\MySQL\Table
      */
     public function setOr(int $times = 1)
@@ -756,8 +691,11 @@ class Table implements \SmartPDO\Interfaces\Table
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::update()
+     *
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
      *
      * @return \SmartPDO\MySQL\Table
      */
@@ -770,13 +708,12 @@ class Table implements \SmartPDO\Interfaces\Table
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::value()
      *
-     * @param string $column
-     *            table column
-     * @param string|integer $value
-     *            Value to be inserted
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
      * @return \SmartPDO\MySQL\Table
      */
     public function value(string $column, $value)
@@ -788,25 +725,24 @@ class Table implements \SmartPDO\Interfaces\Table
     }
 
     /**
-     *
      * {@inheritdoc}
+     * @see \SmartPDO\Interfaces\Table::where()
      *
-     * @param string $column
-     *            Columns name
-     * @param mixed $value
-     *            Value to compare, use NULL for 'IS NULL'
-     * @param string $comparison
-     *            Comparision action, when value is NULL, use = or !=
-     * @param string $table
-     *            Specified table, NULL for master table
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
      * @return \SmartPDO\MySQL\Table
      */
     public function where(string $column, $value, string $comparison = '=', string $table = null)
     {
-        // Get tablename
-        $tbl = $this->mysql->getTableName($table != null ? $table : $this->tableName);
         // Register dataset WHERE
-        $this->parameters->registerWhere($tbl, $column, $comparison, $value, $this->ors == 0);
+        $this->parameters->registerWhere(
+        	$table != null ? $table : $this->tableName, 
+        	$column, 
+        	$comparison, 
+        	$value, 
+        	$this->ors == 0
+        );
         // Decrease OR counter if possible
         if ($this->ors > 0) {
             $this->ors --;

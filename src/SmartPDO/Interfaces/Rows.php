@@ -8,7 +8,7 @@ namespace SmartPDO\Interfaces;
 /**
  * Pdo rows interface
  * 
- * @version 1
+ * @version 1.1
  * @author Rick de Man <rick@rickdeman.nl>
  */
 interface Rows {
@@ -16,7 +16,7 @@ interface Rows {
 	/**
 	 * Mysql table row handler
 	 * 
-	 * @version 1
+	 * @version 1.1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * 
 	 * @param \SmartPDO\Interfaces\Database $db
@@ -29,7 +29,7 @@ interface Rows {
 	/**
 	 * Get the ID of the last inserted row
 	 * 
-	 * @version 1
+	 * @version 1.1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * 
 	 * @return null|int|string
@@ -39,7 +39,7 @@ interface Rows {
 	/**
 	 * Get the used QUERY
 	 * 
-	 * @version 1
+	 * @version 1.1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * 
 	 * @return string
@@ -49,7 +49,7 @@ interface Rows {
 	/**
 	 * Get the rows
 	 * 
-	 * @version 1
+	 * @version 1.1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 * 
 	 * @return array
@@ -59,8 +59,9 @@ interface Rows {
 	/**
 	 * Get the row count of the table column
 	 * 
-	 * @version 1
+	 * @version 1.1
 	 * @author Rick de Man <rick@rickdeman.nl>
+	 * 
 	 * @return int
 	 */
 	function getTotalRows();
@@ -68,8 +69,9 @@ interface Rows {
 	/**
 	 * Get the amount of rows
 	 * 
-	 * @version 1
+	 * @version 1.1
 	 * @author Rick de Man <rick@rickdeman.nl>
+	 * 
 	 * @return number
 	 */
 	function rowCount();

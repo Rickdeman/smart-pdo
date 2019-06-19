@@ -8,8 +8,8 @@ namespace SmartPDO\Interfaces;
 /**
  * Interface for all SmartPDO Table handlers
  *
- * @author Rick de Man
- * @version 1
+ * @version 1.1
+ * @author Rick de Man <rick@rickdeman.nl>
  */
 interface Table
 {
@@ -17,7 +17,7 @@ interface Table
     /**
      * Mysql table constructor
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param \SmartPDO\Interfaces\Database $db
@@ -30,7 +30,7 @@ interface Table
     /**
      * add (AND) BETWEEN
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $column
@@ -51,7 +51,7 @@ interface Table
     /**
      * Set columns to be selected
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $columns
@@ -64,21 +64,22 @@ interface Table
     /**
      * Add an Ddecrement value setter
      *
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *     
      * @param string $column
      *            Column name
      * @param float $dec
      * 			  value to be decremented by
-     * @param string $table
-     *            Target table, NULL for root table
      *
      * @return \SmartPDO\Interfaces\Table
      */
-    public function decrement(string $columns, float $dec = 1, string $table = null);
+    public function decrement(string $column, float $dec = 1);
     
     /**
      * Creates a DELETE query
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @return \SmartPDO\Interfaces\Table
@@ -88,7 +89,7 @@ interface Table
     /**
      * Enable DISTINCT for a WHERE query, columns must be defined!
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @return \SmartPDO\Interfaces\Table
@@ -98,27 +99,38 @@ interface Table
     /**
      * Execute query with created parameters
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @return \SmartPDO\Interfaces\Rows
      */
     public function execute();
 
+    
+    /**
+     * Return all active columns for querys
+     *
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
+     * @return string[]
+     */
+    public function getColumns();
+    
     /**
      * Return the PDO object
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
-     * @return \SmartPDO\Interfaces\Table
+     * @return \SmartPDO\Interfaces\Database
      */
     public function getDb();
 
     /**
      * Return the root table
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @return string
@@ -128,7 +140,7 @@ interface Table
     /**
      * Return all available tables for querys
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @return string[]
@@ -138,7 +150,7 @@ interface Table
     /**
      * create a AND/OR group
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param bool $and
@@ -149,7 +161,7 @@ interface Table
     /**
      * Add GROUP BY
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      * @param string $column
      *            Column to be sorted by
@@ -163,7 +175,7 @@ interface Table
     /**
      * Add (AND) IN
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      * @param string $column
      *            Column name
@@ -181,6 +193,9 @@ interface Table
     /**
      * Add an Incremental value setter
      * 
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *     
      * @param string $column
      *            Column name
      * @param float $inc
@@ -190,12 +205,12 @@ interface Table
      *            
      * @return \SmartPDO\Interfaces\Table
      */
-    public function increment(string $columns, float $inc = 1, string $table = null);
+    public function increment(string $column, float $inc = 1);
     
     /**
      * Add INNER JOIN
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $tableLeft
@@ -216,7 +231,7 @@ interface Table
     /**
      * Add INNER JOIN
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $columnLeft
@@ -233,7 +248,7 @@ interface Table
     /**
      * Add INNER JOIN
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $tableRight
@@ -248,7 +263,7 @@ interface Table
     /**
      * Create an INSERT query
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @return \SmartPDO\Interfaces\Table
@@ -258,7 +273,7 @@ interface Table
     /**
      * Add LEFT JOIN
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $tableLeft
@@ -279,7 +294,7 @@ interface Table
     /**
      * Add LEFT JOIN
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $columnLeft
@@ -296,7 +311,7 @@ interface Table
     /**
      * Add LEFT JOIN
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $tableRight
@@ -312,7 +327,7 @@ interface Table
      * add LIKE
      *
      * @author Rick de Man <rick@rickdeman.nl>
-     * @version 1
+     * @version 1.1
      * @param string $column
      *            Column name
      * @param mixed $value
@@ -331,7 +346,7 @@ interface Table
     /**
      * Add LIMIT
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param int $items
@@ -346,7 +361,7 @@ interface Table
     /**
      * Add ORDER BY
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $column
@@ -363,7 +378,7 @@ interface Table
     /**
      * Add RIGHT JOIN
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $tableLeft
@@ -384,7 +399,7 @@ interface Table
     /**
      * Add RIGHT JOIN
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $columnLeft
@@ -401,7 +416,7 @@ interface Table
     /**
      * Add RIGHT JOIN
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $tableRight
@@ -416,7 +431,7 @@ interface Table
     /**
      * Create an SELECT query, default
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @return \SmartPDO\Interfaces\Table
@@ -426,7 +441,7 @@ interface Table
     /**
      * Add SET
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $column
@@ -441,7 +456,7 @@ interface Table
     /**
      * Set the AND to OR for single time
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param integer $times
@@ -454,7 +469,7 @@ interface Table
     /**
      * Create an UPDATE query
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @return \SmartPDO\Interfaces\Table
@@ -464,7 +479,7 @@ interface Table
     /**
      * Add key value for inserting
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $column
@@ -479,7 +494,7 @@ interface Table
     /**
      * Add (AND) WHERE comparison
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $column

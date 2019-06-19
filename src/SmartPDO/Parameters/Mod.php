@@ -8,7 +8,7 @@ namespace SmartPDO\Parameters;
 /**
  * SmartPdo MOD Parameter
  *
- * @version 1
+ * @version 1.1
  * @author Rick de Man <rick@rickdeman.nl>
  */
 class Mod extends Set
@@ -17,6 +17,9 @@ class Mod extends Set
 	/**
 	 * modify action
 	 *
+	 * @version 1.1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
 	 * @var string
 	 */
 	private $operator;
@@ -24,15 +27,15 @@ class Mod extends Set
 	/**
 	 * MODE SET parameter initialiser
 	 *
-	 * @version 1
+	 * @version 1.1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
 	 * @param string $column
-	 *        	Full column name
+	 *			Full column name
 	 * @param string $comparison
-	 *        	Comparision action see compareList for more info
+	 *			Comparision action see compareList for more info
 	 * @param string $value
-	 *        	Value to compare
+	 *			Value to compare
 	 */
 	function __Construct(string $column, string $operator, $mod) {
 		$this->column = $column;
@@ -43,7 +46,7 @@ class Mod extends Set
 	/**
 	 * Get the operator function
 	 *
-	 * @version 1
+	 * @version 1.1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
 	 * @return string

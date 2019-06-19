@@ -8,43 +8,62 @@ namespace SmartPDO\Interfaces;
 /**
  * Interface for all SmartPDO handlers
  *
- * @author Rick de Man
- * @version 1
+ * @version 1.1
+ * @author Rick de Man <rick@rickdeman.nl>
  */
 interface Database
 {
-
     /**
      * Verify a column exists within a table
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
+     * @param string $tableName
+     *            The table to be used
      * @param string $column
      *            The Column to be 'found'
-     * @param string $table
-     *            The table to be used
      * @param bool $noException
      *            If the column or table is not found discard the exception
      *            
-     * @return bool True if exists, otherwise false
+     * @return bool
      */
-    public function columnExists(string $column, string $table, bool $noException = false);
-
+	public function columnExists(string $tableName, string $column, bool $noException = false);
+	
+	/**
+	 * Get the character which is used for joining/splitting column names
+	 *
+	 * @version 1.1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
+	 * @return string
+	 */
+	public function getColumnSeperator();
+	
     /**
      * Get the database which we are working with
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @return string
      */
     public function getDatabaseName();
+    
+    /**
+     * Get the prefix string
+     *
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
+     * @return string
+     */
+    public function getPrefix();
 
     /**
-     * Get a mysql table
+     * Get a database table
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $tableName
@@ -52,51 +71,77 @@ interface Database
      *            
      * @return \SmartPDO\Interfaces\Table
      */
-    public function getTable($tableName);
+    public function getTable(string $tableName);
 
     /**
-     * Get all columns of from a table, prefix is not required
+     * Get all columns namesfrom a table, prefix is not required
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
      * @param string $tableName
      *            Table of which the columns should be returned
      *            
-     * @return array all table columns names
+     * @return string[]
      */
-    public function getTableColumns(string $tableName);
-
-    /**
-     * Get a tablename with the prefix
-     *
-     * @version 1
-     * @author Rick de Man <rick@rickdeman.nl>
-     *        
-     * @param string $tableName
-     *            Table name without prefix
-     *            
-     * @return string
-     */
-    public function getTableName(string $tableName);
+    public function getTableColumnNames(string $tableName);
 
     /**
      * Get all tables with columns
      *
-     * @version 1
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
-     *        
-     * @return array
-     */
-    public function getTables();
-
-    /**
-     * Get the prefix string
+     * 
+     * @param string $tableName
+     *            Table name without prefix
      *
-     * @version 1
+     * @return \SmartPDO\Interfaces\TableColumns
+     */
+    public function getTableInfo(string $tableName);
+    
+    /**
+     * Get all tables with columns
+     *
+     * @version 1.1
      * @author Rick de Man <rick@rickdeman.nl>
      *        
+     * @return \SmartPDO\Interfaces\TableColumns[]
+     */
+    public function getTableInfos();
+    
+    /**
+     * Get a tablename with the prefix
+     *
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
+     * @param string $tableName
+     *            Table name without prefix
+     *
      * @return string
      */
-    public function getPrefix();
+    public function getTableName(string $tableName);
+    
+    /**
+     * Get all tables names
+     *
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
+     * @return string[]
+     */
+    public function getTableNames();
+    
+    /**
+     * Check if a table exists
+     *
+     * @version 1.1
+     * @author Rick de Man <rick@rickdeman.nl>
+     *
+     * @param string $tableName
+     *            Table name without prefix
+     *            
+     * @return boolean
+     */
+    public function tableExists(string $tableName);
 }

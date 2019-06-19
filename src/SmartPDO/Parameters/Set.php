@@ -7,7 +7,7 @@ namespace SmartPDO\Parameters;
 /**
  * SmartPdo Parameter SET
  *
- * @version 1
+ * @version 1.1
  * @author Rick de Man <rick@rickdeman.nl>
  *
  */
@@ -17,6 +17,9 @@ class Set
 	/**
 	 * Column name
 	 *
+	 * @version 1.1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
 	 * @var string
 	 */
 	protected $column;
@@ -25,6 +28,9 @@ class Set
 	/**
 	 * SET Value
 	 *
+	 * @version 1.1
+	 * @author Rick de Man <rick@rickdeman.nl>
+	 *
 	 * @var mixed
 	 */
 	protected $value;
@@ -32,15 +38,15 @@ class Set
 	/**
 	 * MODE SET parameter initialiser
 	 *
-	 * @version 1
+	 * @version 1.1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
 	 * @param string $table
-	 *        	Full table name
+	 *			Full table name
 	 * @param string $column
-	 *        	Full column name
+	 *			Full column name
 	 * @param mixed $value
-	 *        	Value to compare
+	 *			Value to compare
 	 */
 	function __Construct(string $column, $value) {
 		$this->column = $column;
@@ -50,7 +56,7 @@ class Set
 	/**
 	 * Get the column name
 	 *
-	 * @version 1
+	 * @version 1.1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
 	 * @return string
@@ -64,7 +70,7 @@ class Set
 	/**
 	 * Get the SET Value
 	 *
-	 * @version 1
+	 * @version 1.1
 	 * @author Rick de Man <rick@rickdeman.nl>
 	 *
 	 * @return mixed
